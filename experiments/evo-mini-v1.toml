@@ -1,26 +1,15 @@
 [experiment]
 name = "evo-mini-v1"
 seed = 42
-mode = "evolution"
 
-[search_space]
-# Core training knobs
-learning_rate = [0.05, 0.1]
-epochs = [3, 5]
-batch_size = [32]
-
-# Model family (use cnn or mlp, but not both)
-model_type = ["cnn"]
-
-# MLP knobs (uncomment when model_type = "mlp")
-# hidden_size = [64, 128]
-# num_layers = [2, 3]
-
-# CNN knobs
-cnn_channels = [16, 32]
-cnn_kernel_size = [3, 5]
-cnn_dropout = [0.0, 0.2]
-cnn_fc_hidden = [64, 128]
+[schema]
+learning_rate = {type = "float", min = 0.001, max = 0.5, description = "Learning rate for optimizer"}
+epochs = {type = "int", min = 1, max = 20, description = "Number of training epochs"}
+batch_size = {type = "int", enum = [16, 32, 64, 128], description = "Training batch size"}
+cnn_channels = {type = "int", min = 8, max = 128, description = "CNN channel count"}
+cnn_kernel_size = {type = "int", enum = [3, 5, 7], description = "Convolution kernel size"}
+cnn_dropout = {type = "float", min = 0.0, max = 0.5, description = "Dropout rate"}
+cnn_fc_hidden = {type = "int", min = 32, max = 512, description = "Fully connected hidden layer size"}
 
 [evolution]
 generations = 5
@@ -28,7 +17,6 @@ cap_per_generation = 16
 elite_k = 4
 
 [evolution.llm]
-enabled = true
 # Example OpenRouter model id:
 model = "minimax/minimax-m2.1"
 temperature = 0.0

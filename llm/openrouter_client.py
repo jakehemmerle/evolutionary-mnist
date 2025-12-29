@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-import json
 import os
-import urllib.error
-import urllib.request
+from typing import Any
+
+import requests
 
 
 class OpenRouterError(RuntimeError):
@@ -13,53 +13,48 @@ class OpenRouterError(RuntimeError):
 def openrouter_chat_completion(
     *,
     model: str,
-    messages: list[dict[str, str]],
+    messages: list[dict[str, Any]],
     api_key: str | None = None,
     temperature: float = 0.2,
     max_tokens: int = 800,
     timeout_seconds: int = 60,
-) -> str:
+) -> dict[str, Any]:
     """
-    Minimal OpenRouter chat-completions client.
-    Returns assistant message content.
+    OpenRouter chat-completions client with reasoning enabled.
+    Returns the full assistant message dict (content, reasoning_details, etc.).
     """
     api_key = api_key or os.environ.get("OPENROUTER_API_KEY")
     if not api_key:
         raise OpenRouterError("Missing OPENROUTER_API_KEY (env var) and no api_key provided.")
 
-    payload = {
-        "model": model,
-        "messages": messages,
-        "temperature": temperature,
-        "max_tokens": max_tokens,
-    }
-    body = json.dumps(payload).encode("utf-8")
-
-    req = urllib.request.Request(
-        "https://openrouter.ai/api/v1/chat/completions",
-        data=body,
-        headers={
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-            # Optional but recommended by OpenRouter:
-            "X-Title": "mnist-evolution-tuner",
-        },
-        method="POST",
-    )
-
     try:
-        with urllib.request.urlopen(req, timeout=timeout_seconds) as resp:
-            raw = resp.read().decode("utf-8")
-    except urllib.error.HTTPError as e:
-        detail = e.read().decode("utf-8", errors="replace") if hasattr(e, "read") else str(e)
-        raise OpenRouterError(f"OpenRouter HTTP error: {e.code} {e.reason}: {detail}") from e
-    except urllib.error.URLError as e:
+        response = requests.post(
+            url="https://openrouter.ai/api/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+                "X-Title": "mnist-evolution-tuner",
+            },
+            json={
+                "model": model,
+                "messages": messages,
+                "temperature": temperature,
+                "max_tokens": max_tokens,
+                "reasoning": {"enabled": True},
+            },
+            timeout=timeout_seconds,
+        )
+        response.raise_for_status()
+    except requests.exceptions.Timeout as e:
+        raise OpenRouterError(f"OpenRouter request timed out after {timeout_seconds}s") from e
+    except requests.exceptions.ConnectionError as e:
         raise OpenRouterError(f"OpenRouter connection error: {e}") from e
+    except requests.exceptions.HTTPError as e:
+        detail = response.text if response else str(e)
+        raise OpenRouterError(f"OpenRouter HTTP error: {response.status_code}: {detail}") from e
 
-    data = json.loads(raw)
+    data = response.json()
     try:
-        return data["choices"][0]["message"]["content"]
-    except Exception as e:
+        return data["choices"][0]["message"]
+    except (KeyError, IndexError, TypeError) as e:
         raise OpenRouterError(f"Unexpected OpenRouter response shape: {data}") from e
-
-

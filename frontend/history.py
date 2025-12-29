@@ -110,19 +110,12 @@ def _render_single_experiment(experiment: dict) -> None:
             "Accuracy": f"{r.get('val_accuracy', 0) * 100:.2f}%",
             "Loss": f"{r.get('val_loss', 0):.4f}",
             "Time": f"{r.get('wall_time_seconds', 0):.1f}s",
-            "Model": params.get("model_type", "mlp"),
             "LR": params.get("learning_rate", 0),
             "Epochs": params.get("epochs", 0),
+            "Channels": params.get("cnn_channels", "-"),
+            "Kernel": params.get("cnn_kernel_size", "-"),
+            "FC": params.get("cnn_fc_hidden", "-"),
         }
-        
-        # Add model-specific params
-        if params.get("model_type") == "cnn":
-            row["Channels"] = params.get("cnn_channels", "-")
-            row["Kernel"] = params.get("cnn_kernel_size", "-")
-        else:
-            row["Hidden"] = params.get("hidden_size", "-")
-            row["Layers"] = params.get("num_layers", "-")
-        
         table_data.append(row)
     
     st.dataframe(
@@ -170,12 +163,8 @@ def _render_comparison_view(experiments: list[dict]) -> None:
             avg_acc = sum(r.get("val_accuracy", 0) for r in results) / len(results)
             total_time = sum(r.get("wall_time_seconds", 0) for r in results)
             
-            config = exp.get("config", {})
-            mode = config.get("experiment", {}).get("mode", "unknown")
-            
             comparison_data.append({
                 "Experiment": exp["name"],
-                "Mode": mode,
                 "Configs": len(results),
                 "Best Acc": f"{best['val_accuracy'] * 100:.2f}%",
                 "Avg Acc": f"{avg_acc * 100:.2f}%",

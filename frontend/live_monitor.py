@@ -95,20 +95,11 @@ def _render_experiment_status(name: str, progress: dict, is_live: bool) -> None:
         progress_pct = current_gen / total_gen if total_gen > 0 else 0
         st.progress(progress_pct, text=f"Generation {current_gen} of {total_gen}")
         
-        # Current option lists being explored
-        option_lists = progress.get("option_lists")
-        if option_lists and is_live:
-            with st.expander("Current Generation Parameters", expanded=True):
-                # Format as a table
-                params_varied = []
-                for param, values in option_lists.items():
-                    if len(values) > 1:
-                        params_varied.append({"Parameter": param, "Options": str(values)})
-                
-                if params_varied:
-                    st.table(params_varied)
-                else:
-                    st.caption("No parameters being varied this generation.")
+        # Current configs being explored
+        current_configs = progress.get("current_configs")
+        if current_configs and is_live:
+            with st.expander("Current Generation Configs", expanded=True):
+                st.dataframe(current_configs)
         
         # Live loss curves from results so far
         results = progress.get("results_so_far", [])
@@ -129,12 +120,12 @@ def _render_live_loss_curves(results: list[dict]) -> None:
     for i, result in enumerate(recent_results):
         epoch_losses = result.get("epoch_losses", [])
         params = result.get("params", {})
-        
+
         # Create label from key params
-        model_type = params.get("model_type", "mlp")
         lr = params.get("learning_rate", 0)
-        label = f"{model_type} lr={lr}"
-        
+        channels = params.get("cnn_channels", 32)
+        label = f"ch={channels} lr={lr}"
+
         fig.add_trace(go.Scatter(
             x=list(range(1, len(epoch_losses) + 1)),
             y=epoch_losses,

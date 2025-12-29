@@ -1,28 +1,6 @@
 import torch.nn as nn
 
 
-class MNISTNet(nn.Module):
-    def __init__(self, hidden_size: int, num_layers: int):
-        super().__init__()
-        self.flatten = nn.Flatten()
-
-        layers = []
-        input_size = 28 * 28
-
-        for _ in range(num_layers):
-            layers.append(nn.Linear(input_size, hidden_size))
-            layers.append(nn.ReLU())
-            input_size = hidden_size
-
-        layers.append(nn.Linear(hidden_size, 10))
-
-        self.network = nn.Sequential(*layers)
-
-    def forward(self, x):
-        x = self.flatten(x)
-        return self.network(x)
-
-
 class MNISTConvNet(nn.Module):
     def __init__(self, channels: int, kernel_size: int, dropout: float, fc_hidden: int):
         super().__init__()
@@ -50,16 +28,9 @@ class MNISTConvNet(nn.Module):
 
 
 def build_model(params) -> nn.Module:
-    # Local import to avoid circular imports (training.py imports build_model)
-    model_type = getattr(params, "model_type", "mlp")
-    if model_type == "cnn":
-        return MNISTConvNet(
-            channels=getattr(params, "cnn_channels", 32),
-            kernel_size=getattr(params, "cnn_kernel_size", 3),
-            dropout=getattr(params, "cnn_dropout", 0.0),
-            fc_hidden=getattr(params, "cnn_fc_hidden", 128),
-        )
-    return MNISTNet(
-        hidden_size=getattr(params, "hidden_size", 128),
-        num_layers=getattr(params, "num_layers", 2),
+    return MNISTConvNet(
+        channels=params.cnn_channels,
+        kernel_size=params.cnn_kernel_size,
+        dropout=params.cnn_dropout,
+        fc_hidden=params.cnn_fc_hidden,
     )

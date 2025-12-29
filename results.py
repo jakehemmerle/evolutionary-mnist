@@ -18,7 +18,7 @@ def save_results(config: ExperimentConfig, results: list[TrainingHistory], outpu
 
 def _save_config(config: ExperimentConfig, output_dir: Path):
     config_data = {
-        "experiment": {"name": config.name, "seed": config.seed, "mode": getattr(config, "mode", "grid")},
+        "experiment": {"name": config.name, "seed": config.seed, "mode": "evolution"},
         "search_space": config.search_space,
         "execution": {"num_gpus": config.num_gpus, "workers_per_gpu": config.workers_per_gpu},
         "evolution": {

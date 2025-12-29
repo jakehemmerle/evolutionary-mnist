@@ -1,16 +1,9 @@
 from concurrent.futures import ProcessPoolExecutor, as_completed
-from itertools import product
 
 import torch
 
 from config import ExperimentConfig, HyperParams, TrainingHistory
 from training import train_model
-
-
-def generate_configs(search_space: dict[str, list]) -> list[HyperParams]:
-    keys = search_space.keys()
-    values = search_space.values()
-    return [HyperParams(**dict(zip(keys, combo))) for combo in product(*values)]
 
 
 def run_single_experiment(args: tuple) -> TrainingHistory:
@@ -20,17 +13,6 @@ def run_single_experiment(args: tuple) -> TrainingHistory:
         params, train_images, train_labels, val_images, val_labels, device, experiment_id, seed
     )
     return history
-
-
-def run_hyperparameter_search(
-    config: ExperimentConfig,
-    train_images: torch.Tensor,
-    train_labels: torch.Tensor,
-    val_images: torch.Tensor,
-    val_labels: torch.Tensor,
-) -> list[TrainingHistory]:
-    configs = generate_configs(config.search_space)
-    return run_configs(config, configs, train_images, train_labels, val_images, val_labels)
 
 
 def run_configs(

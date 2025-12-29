@@ -45,10 +45,7 @@ def render_llm_viewer_tab(experiments_dir: Path) -> None:
                 })
     
     if not experiments_with_llm:
-        st.info(
-            "No LLM decision logs found. Run an experiment with LLM enabled "
-            "(`evolution.llm.enabled = true` in config) to see decisions."
-        )
+        st.info("No LLM decision logs found. Run an experiment to see LLM advisor decisions.")
         return
     
     # Experiment selector
@@ -118,27 +115,11 @@ def _render_decision_card(decision: dict) -> None:
             else:
                 st.success("LLM", icon="✅")
         
-        # Option lists that were chosen
-        option_lists = decision.get("validated_option_lists")
-        if option_lists:
-            st.subheader("Parameters Explored")
-            
-            # Highlight varied parameters
-            varied = []
-            fixed = []
-            for param, values in option_lists.items():
-                if len(values) > 1:
-                    varied.append({"Parameter": param, "Values": str(values), "Status": "🔀 Varied"})
-                else:
-                    fixed.append({"Parameter": param, "Values": str(values), "Status": "📌 Fixed"})
-            
-            if varied:
-                st.markdown("**Varied Parameters:**")
-                st.table(varied)
-            
-            if fixed:
-                with st.expander("Fixed Parameters"):
-                    st.table(fixed)
+        # Configs that were chosen
+        configs = decision.get("validated_configs")
+        if configs:
+            st.subheader(f"Proposed Configs ({len(configs)})")
+            st.dataframe(configs)
         
         # Error if fallback was used
         error = decision.get("error")

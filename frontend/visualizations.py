@@ -77,19 +77,19 @@ def _render_pareto_front(results: list[dict]) -> None:
         data.append({
             "Accuracy": r.get("val_accuracy", 0) * 100,
             "Wall Time (s)": r.get("wall_time_seconds", 0),
-            "Model": params.get("model_type", "mlp"),
             "LR": params.get("learning_rate", 0),
+            "Channels": params.get("cnn_channels", 32),
             "Epochs": params.get("epochs", 0),
             "Param Count": r.get("param_count", 0),
             "Config": i + 1,
         })
-    
+
     # Create scatter plot
     fig = px.scatter(
         data,
         x="Wall Time (s)",
         y="Accuracy",
-        color="Model",
+        color="Channels",
         size="Param Count",
         hover_data=["LR", "Epochs", "Config"],
         title="Accuracy vs Training Time",
@@ -183,12 +183,12 @@ def _render_loss_curves(results: list[dict]) -> None:
         epoch_losses = r.get("epoch_losses", [])
         params = r.get("params", {})
         accuracy = r.get("val_accuracy", 0) * 100
-        
-        model_type = params.get("model_type", "mlp")
+
         lr = params.get("learning_rate", 0)
-        
-        label = f"{model_type} lr={lr} ({accuracy:.1f}%)"
-        
+        channels = params.get("cnn_channels", 32)
+
+        label = f"ch={channels} lr={lr} ({accuracy:.1f}%)"
+
         fig.add_trace(go.Scatter(
             x=list(range(1, len(epoch_losses) + 1)),
             y=epoch_losses,

@@ -11,7 +11,7 @@ def generate_charts(results: list[TrainingHistory], output_dir: Path):
 
     _plot_loss_curves(results, charts_dir)
     _plot_accuracy_vs_lr(results, charts_dir)
-    _plot_accuracy_vs_hidden(results, charts_dir)
+    _plot_accuracy_vs_channels(results, charts_dir)
     _plot_top_configurations(results, charts_dir)
 
     print(f"Charts saved to {charts_dir}/")
@@ -20,7 +20,7 @@ def generate_charts(results: list[TrainingHistory], output_dir: Path):
 def _plot_loss_curves(results: list[TrainingHistory], charts_dir: Path):
     plt.figure(figsize=(12, 8))
     for i, history in enumerate(results):
-        label = f"Exp {i+1}: {history.params.learning_rate}lr, {history.params.hidden_size}h"
+        label = f"Exp {i+1}: lr={history.params.learning_rate}, ch={history.params.cnn_channels}"
         plt.plot(history.epoch_losses, label=label, alpha=0.7)
     plt.xlabel("Epoch")
     plt.ylabel("Training Loss")
@@ -44,16 +44,16 @@ def _plot_accuracy_vs_lr(results: list[TrainingHistory], charts_dir: Path):
     plt.close()
 
 
-def _plot_accuracy_vs_hidden(results: list[TrainingHistory], charts_dir: Path):
+def _plot_accuracy_vs_channels(results: list[TrainingHistory], charts_dir: Path):
     plt.figure(figsize=(10, 6))
-    hidden_sizes = [h.params.hidden_size for h in results]
+    channels = [h.params.cnn_channels for h in results]
     accs = [h.val_accuracy * 100 for h in results]
-    plt.scatter(hidden_sizes, accs, alpha=0.6)
-    plt.xlabel("Hidden Size")
+    plt.scatter(channels, accs, alpha=0.6)
+    plt.xlabel("CNN Channels")
     plt.ylabel("Validation Accuracy (%)")
-    plt.title("Accuracy vs Hidden Size")
+    plt.title("Accuracy vs CNN Channels")
     plt.tight_layout()
-    plt.savefig(charts_dir / "accuracy_vs_hidden.png", dpi=150)
+    plt.savefig(charts_dir / "accuracy_vs_channels.png", dpi=150)
     plt.close()
 
 
@@ -61,7 +61,7 @@ def _plot_top_configurations(results: list[TrainingHistory], charts_dir: Path):
     sorted_results = sorted(results, key=lambda x: x.val_accuracy, reverse=True)[:10]
     plt.figure(figsize=(12, 6))
     labels = [
-        f"lr={h.params.learning_rate}\nh={h.params.hidden_size}\nl={h.params.num_layers}"
+        f"lr={h.params.learning_rate}\nch={h.params.cnn_channels}\nfc={h.params.cnn_fc_hidden}"
         for h in sorted_results
     ]
     accuracies = [h.val_accuracy * 100 for h in sorted_results]

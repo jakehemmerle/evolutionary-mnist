@@ -11,19 +11,11 @@ def _device_type(device: str) -> str:
     return "cuda" if str(device).startswith("cuda") else "cpu"
 
 
-def _maybe_add_channel(params: HyperParams, images: torch.Tensor) -> torch.Tensor:
-    # CNN expects NCHW; MLP expects NHW.
-    if params is not None and getattr(params, "model_type", "mlp") == "cnn":
-        return images.unsqueeze(1)
-    return images
-
-
-def evaluate(model, images, labels, criterion, device, params: HyperParams | None = None) -> tuple[float, float]:
+def evaluate(model, images, labels, criterion, device) -> tuple[float, float]:
     model.eval()
     with torch.no_grad(), torch.amp.autocast(device_type=_device_type(device)):
-        images = images.to(device)
+        images = images.to(device).unsqueeze(1)
         labels = labels.to(device)
-        images = _maybe_add_channel(params, images)
         outputs = model(images)
         loss = criterion(outputs, labels).item()
         predictions = outputs.argmax(dim=1)
@@ -65,9 +57,8 @@ def train_model(
         num_batches = 0
 
         for i in range(0, num_samples, params.batch_size):
-            batch_images = train_images[i : i + params.batch_size]
+            batch_images = train_images[i : i + params.batch_size].unsqueeze(1)
             batch_labels = train_labels[i : i + params.batch_size]
-            batch_images = _maybe_add_channel(params, batch_images)
 
             optimizer.zero_grad()
 
@@ -87,9 +78,8 @@ def train_model(
         print(f"[Exp {experiment_id:2d}] [{device}] Epoch {epoch + 1}/{params.epochs} - Loss: {avg_loss:.4f}")
 
     # Validation
-    val_images = val_images.to(device)
+    val_images = val_images.to(device).unsqueeze(1)
     val_labels = val_labels.to(device)
-    val_images = _maybe_add_channel(params, val_images)
     model.eval()
     with torch.no_grad(), torch.amp.autocast(device_type=_device_type(device)):
         outputs = model(val_images)
