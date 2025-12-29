@@ -1,0 +1,38 @@
+[experiment]
+name = "evo-mini-v1"
+seed = 42
+mode = "evolution"
+
+[search_space]
+# Core training knobs
+learning_rate = [0.05, 0.1]
+epochs = [3, 5]
+batch_size = [32]
+
+# Model family (use cnn or mlp, but not both)
+model_type = ["cnn"]
+
+# MLP knobs (uncomment when model_type = "mlp")
+# hidden_size = [64, 128]
+# num_layers = [2, 3]
+
+# CNN knobs
+cnn_channels = [16, 32]
+cnn_kernel_size = [3, 5]
+cnn_dropout = [0.0, 0.2]
+cnn_fc_hidden = [64, 128]
+
+[evolution]
+generations = 5
+cap_per_generation = 16
+elite_k = 4
+
+[evolution.llm]
+enabled = true
+# Example OpenRouter model id:
+model = "minimax/minimax-m2.1"
+temperature = 0.0
+
+[execution]
+num_gpus = 2
+workers_per_gpu = 2

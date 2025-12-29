@@ -18,9 +18,19 @@ def save_results(config: ExperimentConfig, results: list[TrainingHistory], outpu
 
 def _save_config(config: ExperimentConfig, output_dir: Path):
     config_data = {
-        "experiment": {"name": config.name, "seed": config.seed},
+        "experiment": {"name": config.name, "seed": config.seed, "mode": getattr(config, "mode", "grid")},
         "search_space": config.search_space,
         "execution": {"num_gpus": config.num_gpus, "workers_per_gpu": config.workers_per_gpu},
+        "evolution": {
+            "generations": getattr(config.evolution, "generations", None),
+            "cap_per_generation": getattr(config.evolution, "cap_per_generation", None),
+            "elite_k": getattr(config.evolution, "elite_k", None),
+            "llm": {
+                "enabled": getattr(config.evolution.llm, "enabled", False) if getattr(config, "evolution", None) else False,
+                "model": getattr(config.evolution.llm, "model", "") if getattr(config, "evolution", None) else "",
+                "temperature": getattr(config.evolution.llm, "temperature", 0.2) if getattr(config, "evolution", None) else 0.2,
+            },
+        },
     }
     with open(output_dir / "config.json", "w") as f:
         json.dump(config_data, f, indent=2)
@@ -37,6 +47,8 @@ def _save_results_json(config: ExperimentConfig, results: list[TrainingHistory],
                 "epoch_losses": h.epoch_losses,
                 "val_loss": h.val_loss,
                 "val_accuracy": h.val_accuracy,
+                "wall_time_seconds": h.wall_time_seconds,
+                "param_count": h.param_count,
             }
             for h in results
         ],

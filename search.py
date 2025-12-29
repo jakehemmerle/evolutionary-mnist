@@ -30,6 +30,17 @@ def run_hyperparameter_search(
     val_labels: torch.Tensor,
 ) -> list[TrainingHistory]:
     configs = generate_configs(config.search_space)
+    return run_configs(config, configs, train_images, train_labels, val_images, val_labels)
+
+
+def run_configs(
+    config: ExperimentConfig,
+    configs: list[HyperParams],
+    train_images: torch.Tensor,
+    train_labels: torch.Tensor,
+    val_images: torch.Tensor,
+    val_labels: torch.Tensor,
+) -> list[TrainingHistory]:
     total_workers = config.num_gpus * config.workers_per_gpu
     print(f"Running {len(configs)} experiments with {total_workers} workers ({config.workers_per_gpu} per GPU)...\n")
 
