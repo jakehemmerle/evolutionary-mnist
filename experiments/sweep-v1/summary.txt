@@ -1,0 +1,12 @@
+Experiment: sweep-v1
+Timestamp: 2025-12-29T14:41:17.737224
+Total experiments: 6
+============================================================
+Top 10 Configurations by Validation Accuracy:
+============================================================
+ 1. 95.93% | lr=0.1, epochs=10, batch=32, hidden=20, layers=3
+ 2. 95.63% | lr=0.1, epochs=15, batch=32, hidden=20, layers=3
+ 3. 95.23% | lr=0.1, epochs=5, batch=32, hidden=20, layers=3
+ 4. 92.88% | lr=0.1, epochs=10, batch=32, hidden=10, layers=3
+ 5. 92.83% | lr=0.1, epochs=15, batch=32, hidden=10, layers=3
+ 6. 92.43% | lr=0.1, epochs=5, batch=32, hidden=10, layers=3
