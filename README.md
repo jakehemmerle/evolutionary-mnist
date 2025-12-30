@@ -1,6 +1,6 @@
 # evolutionary-mnist
 
-This repository demonstrates hyperparameter tuning via LLM for a two layer CNN on the MNIST dataset. It is also an example of something that can be done, but probably shouldn't.
+Hyperparmaeter tuning via LLM for a two layer CNN on the MNIST dataset. Also an example of something that can be done, but probably shouldn't.
 
 Uses:
 - [PyTorch](https://pytorch.org/) for training the model
