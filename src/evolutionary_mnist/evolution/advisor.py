@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import time
 from dataclasses import asdict
 from datetime import datetime
@@ -9,8 +10,8 @@ from typing import Any
 
 from pydantic import BaseModel, ValidationError, model_validator
 
-from config import HyperParams, TrainingHistory
-from llm.openrouter_client import OpenRouterError, openrouter_chat_completion
+from evolutionary_mnist.config import HyperParams, TrainingHistory
+from evolutionary_mnist.llm.openrouter_client import OpenRouterError, openrouter_chat_completion
 
 
 def _save_llm_decision(
@@ -74,24 +75,30 @@ class LLMConfigListResponse(BaseModel):
         return self
 
 
-def _build_system_prompt(cap: int, schema: dict[str, dict]) -> str:
+def _build_system_prompt(cap: int, schema: dict[str, dict], current_generation: int, total_generations: int) -> str:
     """Build system prompt for direct config output."""
     keys = list(schema.keys())
     return f"""You are a hyperparameter tuning assistant for neural network training.
 
-Output a JSON array of training configurations. You can output anywhere from 1 to {cap} configs.
+You are running generation {current_generation + 1} of {total_generations}.
 
-You MUST output valid JSON: an array of objects where each object has ALL these keys:
+Your response MUST follow this exact format:
+1. First, write your reasoning and analysis (what you learned from all previous results, why you're choosing these hyperparameters)
+2. Then, output your JSON array of training configurations inside a ```json code fence
+
+You can output anywhere from 1 to {cap} configs.
+
+The JSON must be valid: an array of objects where each object has ALL these keys:
 {keys}
 
 Schema for each parameter:
 {json.dumps(schema, indent=2)}
 
-Rules:
-- Propose diverse configs that explore promising regions of the search space
-- Use previous generation results to guide your decisions
-- DO NOT include duplicate configurations
-- Each config must be unique"""
+Things to remember while reasoning:
+- Be more aggressive with your hyperparameter variations. Explore. We are trying to find the best hyperparameters overall.
+- Look at your best runs compared to your worst runs. What are the key differences? Explain from first principles why they were better and use that explination to guide your next generation. Bayesian inference!
+- Think from first principles about which hyperparameters likely improved the accuracy relative to the other hyperparameters and training runs.
+- DO NOT include duplicate configurations or configurations that have already been tried."""
 
 
 def _validate_configs(
@@ -121,18 +128,85 @@ def _validate_configs(
     return unique
 
 
-def _strip_markdown_fences(content: str) -> str:
-    """Strip markdown code fences from LLM response if present."""
+def _extract_json_array(content: str) -> str:
+    """Extract the first JSON array from LLM response, handling duplicates and extra text."""
     content = content.strip()
-    if content.startswith("```"):
-        # Remove opening fence (```json or ```)
-        first_newline = content.find("\n")
-        if first_newline != -1:
-            content = content[first_newline + 1:]
-        # Remove closing fence
-        if content.endswith("```"):
-            content = content[:-3].rstrip()
-    return content
+
+    # Try to find first code fence with JSON
+    fence_match = re.search(r'```(?:json)?\s*\n(\[[\s\S]*?\])\s*\n```', content)
+    if fence_match:
+        return fence_match.group(1)
+
+    # Fall back: find first [...] structure using bracket-matching
+    start = content.find('[')
+    if start == -1:
+        return content  # No array found, return as-is for downstream error
+
+    depth = 0
+    for i, char in enumerate(content[start:], start):
+        if char == '[':
+            depth += 1
+        elif char == ']':
+            depth -= 1
+            if depth == 0:
+                return content[start:i+1]
+
+    return content  # Malformed, return as-is
+
+
+def _log_response_diagnostics(content: str | None, error: Exception) -> str:
+    """Generate diagnostic info for failed parse attempts."""
+    if content is None:
+        return "Response content is None"
+    if content == "":
+        return "Response content is empty string"
+    
+    length = len(content)
+    # Show first and last 100 chars for context
+    preview_len = 100
+    if length <= preview_len * 2:
+        preview = repr(content)
+    else:
+        preview = f"{repr(content[:preview_len])}...{repr(content[-preview_len:])}"
+    
+    # Check if extraction changed the content
+    extracted = _extract_json_array(content)
+    extract_info = ""
+    if extracted != content.strip():
+        extract_info = f" | After extraction: {len(extracted)} chars"
+    
+    return f"Length: {length} chars{extract_info} | Preview: {preview}"
+
+
+def _append_debug_log(
+    output_dir: Path | None,
+    generation: int,
+    attempt: int,
+    content: str | None,
+    error: Exception,
+) -> None:
+    """Append failed attempt details to llm_debug.log for post-mortem analysis."""
+    if output_dir is None:
+        return
+    
+    output_dir.mkdir(parents=True, exist_ok=True)
+    debug_file = output_dir / "llm_debug.log"
+    
+    timestamp = datetime.now().isoformat()
+    diagnostics = _log_response_diagnostics(content, error)
+    
+    entry = f"""
+{'=' * 80}
+[{timestamp}] Generation {generation + 1}, Attempt {attempt}
+Error: {type(error).__name__}: {error}
+Diagnostics: {diagnostics}
+--- Raw Response Start ---
+{content}
+--- Raw Response End ---
+"""
+    
+    with open(debug_file, "a") as f:
+        f.write(entry)
 
 
 def _parse_and_validate_response(
@@ -144,7 +218,7 @@ def _parse_and_validate_response(
     Parse LLM response and validate with Pydantic.
     Raises ValueError, ValidationError, or json.JSONDecodeError on failure.
     """
-    content = _strip_markdown_fences(content)
+    content = _extract_json_array(content)
     data = json.loads(content)
 
     # Handle both [{...}, {...}] and {"configs": [...]} formats
@@ -198,13 +272,12 @@ def propose_next_generation_configs(
     schema: dict[str, dict],
     results_so_far: list[TrainingHistory],
     cap: int,
-    seed: int,
     model: str,
     api_key: str | None = None,
-    temperature: float = 0.2,
     max_retries: int = 2,
     output_dir: Path | None = None,
     generation: int = 0,
+    total_generations: int = 1,
 ) -> list[HyperParams]:
     """
     Ask an LLM to propose training configs for the next generation.
@@ -213,7 +286,7 @@ def propose_next_generation_configs(
 
     If output_dir is provided, logs LLM decisions to llm_decisions.json.
     """
-    system_prompt = _build_system_prompt(cap, schema)
+    system_prompt = _build_system_prompt(cap, schema, generation, total_generations)
     user_prompt = json.dumps({
         "max_configs": cap,
         "schema": schema,
@@ -250,8 +323,7 @@ def propose_next_generation_configs(
                     model=model,
                     messages=messages,
                     api_key=api_key,
-                    temperature=temperature,
-                    max_tokens=800,
+                    max_tokens=8000,  # Increased: reasoning models need extra tokens for thinking
                 )
                 last_response = message
                 content = message.get("content") or ""
@@ -281,20 +353,36 @@ def propose_next_generation_configs(
 
             except (json.JSONDecodeError, ValidationError, ValueError, TypeError) as e:
                 last_error = e
+                raw_content = message.get("content") if message else None
+                
+                # Log diagnostics for debugging
+                diagnostics = _log_response_diagnostics(raw_content, e)
+                print(f"[LLM advisor] Attempt {total_attempts} failed: {type(e).__name__}: {e}")
+                print(f"[LLM advisor] Response diagnostics: {diagnostics}")
+                
+                # Write detailed info to debug log file
+                _append_debug_log(
+                    output_dir=output_dir,
+                    generation=generation,
+                    attempt=total_attempts,
+                    content=raw_content,
+                    error=e,
+                )
+                
                 if attempt < max_retries:
                     # Build error feedback message for retry
                     error_feedback = _build_error_feedback(e, cap)
-                    print(f"[LLM advisor] Attempt {attempt + 1} failed: {e}. Retrying...")
+                    print(f"[LLM advisor] Retrying with error feedback...")
 
                     # Append the assistant's failed response with reasoning_details preserved
                     messages.append({
                         "role": "assistant",
-                        "content": message.get("content"),
-                        "reasoning_details": message.get("reasoning_details"),
+                        "content": raw_content,
+                        "reasoning_details": message.get("reasoning_details") if message else None,
                     })
                     messages.append({"role": "user", "content": error_feedback})
                 else:
-                    print(f"[LLM advisor] All {max_retries + 1} attempts in this cycle failed: {e}")
+                    print(f"[LLM advisor] All {max_retries + 1} attempts in this cycle failed")
 
         # All attempts in this cycle failed - wait and retry
         print(f"[LLM advisor] Retrying after {backoff_seconds:.1f}s backoff (last error: {last_error})")

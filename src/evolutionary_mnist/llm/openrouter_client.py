@@ -15,7 +15,6 @@ def openrouter_chat_completion(
     model: str,
     messages: list[dict[str, Any]],
     api_key: str | None = None,
-    temperature: float = 0.2,
     max_tokens: int = 800,
     timeout_seconds: int = 60,
 ) -> dict[str, Any]:
@@ -38,7 +37,7 @@ def openrouter_chat_completion(
             json={
                 "model": model,
                 "messages": messages,
-                "temperature": temperature,
+                "temperature": 0.0,
                 "max_tokens": max_tokens,
                 "reasoning": {"enabled": True},
             },

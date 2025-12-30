@@ -2,7 +2,7 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 
-from config import EvolutionConfig, TrainingHistory
+from evolutionary_mnist.config import EvolutionConfig, TrainingHistory
 
 
 def generate_charts(results: list[TrainingHistory], output_dir: Path, evolution_config: EvolutionConfig = None):

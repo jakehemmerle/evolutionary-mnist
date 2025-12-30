@@ -1,0 +1,32 @@
+[experiment]
+name = "evo-mini-v3"
+
+[schema]
+learning_rate = { type = "float", min = 0.001, max = 0.5, description = "Learning rate for optimizer" }
+epochs = { type = "int", min = 1, max = 5, description = "Number of training epochs" }
+batch_size = { type = "int", enum = [
+    16,
+    32,
+    64,
+    128,
+], description = "Training batch size" }
+cnn_channels = { type = "int", min = 8, max = 128, description = "CNN channel count" }
+cnn_kernel_size = { type = "int", enum = [
+    3,
+    5,
+    7,
+], description = "Convolution kernel size" }
+cnn_dropout = { type = "float", min = 0.0, max = 0.5, description = "Dropout rate" }
+cnn_fc_hidden = { type = "int", min = 32, max = 512, description = "Fully connected hidden layer size" }
+
+[evolution]
+generations = 5
+runs_per_generation = 4
+
+[evolution.llm]
+# Example OpenRouter model id:
+model = "minimax/minimax-m2.1"
+
+[execution]
+num_gpus = 2
+workers_per_gpu = 2

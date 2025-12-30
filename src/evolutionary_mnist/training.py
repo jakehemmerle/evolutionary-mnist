@@ -1,10 +1,13 @@
 import time
 
 import torch
+import torch._dynamo
 import torch.nn as nn
 
-from config import HyperParams, TrainingHistory
-from model import build_model
+from evolutionary_mnist.config import HyperParams, TrainingHistory
+from evolutionary_mnist.model import build_model
+
+DEFAULT_SEED = 42
 
 
 def _device_type(device: str) -> str:
@@ -31,12 +34,12 @@ def train_model(
     val_labels: torch.Tensor,
     device: str,
     experiment_id: int,
-    seed: int,
 ) -> TrainingHistory:
-    torch.manual_seed(seed)
+    torch.manual_seed(DEFAULT_SEED)
 
     start_t = time.perf_counter()
     model = build_model(params).to(device)
+    torch._dynamo.reset()
     model = torch.compile(model)
     param_count = sum(p.numel() for p in model.parameters())
 

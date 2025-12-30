@@ -1,0 +1,16 @@
+Experiment: evo-mini-v3
+Timestamp: 2025-12-30T15:54:27.925377
+Total experiments: 20
+============================================================
+Top 10 Configurations by Validation Accuracy:
+============================================================
+ 1. 99.18% | lr=0.035, epochs=4, batch=8, ch=112, k=7, drop=0.45, fc=448
+ 2. 99.18% | lr=0.032, epochs=5, batch=8, ch=128, k=7, drop=0.43, fc=480
+ 3. 99.17% | lr=0.035, epochs=5, batch=8, ch=128, k=7, drop=0.45, fc=512
+ 4. 99.15% | lr=0.031, epochs=5, batch=8, ch=112, k=7, drop=0.42, fc=384
+ 5. 99.13% | lr=0.03, epochs=5, batch=8, ch=120, k=7, drop=0.44, fc=480
+ 6. 99.12% | lr=0.03, epochs=4, batch=8, ch=96, k=7, drop=0.45, fc=384
+ 7. 99.12% | lr=0.034, epochs=5, batch=8, ch=120, k=7, drop=0.46, fc=448
+ 8. 99.10% | lr=0.05, epochs=4, batch=16, ch=96, k=7, drop=0.48, fc=448
+ 9. 99.10% | lr=0.028, epochs=5, batch=8, ch=96, k=7, drop=0.4, fc=384
+10. 99.10% | lr=0.026, epochs=5, batch=8, ch=96, k=7, drop=0.38, fc=384

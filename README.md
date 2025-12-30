@@ -1,25 +1,48 @@
-# MNIST
+# evolutionary-mnist
 
-## Dataset
+This repository demonstrates a simple automated hyperparameter tuning via LLM for a two layer CNN on the MNIST dataset.
+
+Uses:
+- [PyTorch](https://pytorch.org/) for training the model
+- [OpenRouter](https://openrouter.ai/) for LLM API calls
+
+Future work:
+- Improve system prompt.
+- Neural Architecture Search for on-the-fly architecture modifications.
+- Keep training time constant per run within each generation.
+
+## Example run
+
+
+![Accuracy per generation](experiments/evo-mini-v3/charts/accuracy_per_generation.png)
+
+Reminder: no regression is used here. The improvements learned come strictly from the LLM's reasoning and analysis on the previous runs.
+
+![Accuracy vs learning rate](experiments/evo-mini-v3/charts/accuracy_vs_lr.png)
+
+Example LLM reasoning (which leaves a lot of room for improvement):
+
+![Screenshot](experiments/evo-mini-v3/charts/Screenshot%202025-12-30%20at%203.51.59%E2%80%AFPM.png)
+
+
+## Setup
+
+```bash
+uv sync
+```
 
 The MNIST dataset is downloaded from Hugging Face: https://huggingface.co/datasets/ylecun/mnist
-
-### Download Command
 
 ```bash
 uvx --from huggingface_hub hf download ylecun/mnist --repo-type dataset --local-dir data
 ```
 
-### Dataset Information
+Use the `scripts/prepare_data.py` script to split the dataset into train and validation sets.
 
-- **Source**: [ylecun/mnist](https://huggingface.co/datasets/ylecun/mnist) on Hugging Face
-- **License**: MIT
-- **Format**: Parquet files
-- **Size**: 70,000 images total (60,000 train, 10,000 test)
-- **Image dimensions**: 28x28 grayscale
-- **Classes**: 10 (digits 0-9)
+## Running Experiments
 
-### Files
+This example runs for 5 generations with 4 training runs per generation.
 
-- `data/mnist/train-00000-of-00001.parquet` - Training set (60,000 images)
-- `data/mnist/test-00000-of-00001.parquet` - Test set (10,000 images)
+```bash
+uv run evolutionary-mnist experiments/evo-mini-v3.toml
+```

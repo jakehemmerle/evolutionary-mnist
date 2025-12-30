@@ -3,7 +3,7 @@ from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
 
-from config import ExperimentConfig, TrainingHistory
+from evolutionary_mnist.config import ExperimentConfig, TrainingHistory
 
 
 def save_results(config: ExperimentConfig, results: list[TrainingHistory], output_dir: Path):
@@ -12,23 +12,22 @@ def save_results(config: ExperimentConfig, results: list[TrainingHistory], outpu
     _save_config(config, output_dir)
     _save_results_json(config, results, output_dir)
     _save_summary(config, results, output_dir)
+    _save_llm_reasoning(output_dir)
 
     print(f"Results saved to {output_dir}/")
 
 
 def _save_config(config: ExperimentConfig, output_dir: Path):
     config_data = {
-        "experiment": {"name": config.name, "seed": config.seed, "mode": "evolution"},
-        "search_space": config.search_space,
+        "experiment": {"name": config.name, "mode": "evolution"},
+        "search_space": config.schema,
         "execution": {"num_gpus": config.num_gpus, "workers_per_gpu": config.workers_per_gpu},
         "evolution": {
             "generations": getattr(config.evolution, "generations", None),
-            "cap_per_generation": getattr(config.evolution, "cap_per_generation", None),
-            "elite_k": getattr(config.evolution, "elite_k", None),
+            "runs_per_generation": getattr(config.evolution, "runs_per_generation", None),
             "llm": {
                 "enabled": getattr(config.evolution.llm, "enabled", False) if getattr(config, "evolution", None) else False,
                 "model": getattr(config.evolution.llm, "model", "") if getattr(config, "evolution", None) else "",
-                "temperature": getattr(config.evolution.llm, "temperature", 0.2) if getattr(config, "evolution", None) else 0.2,
             },
         },
     }
@@ -68,3 +67,20 @@ def _save_summary(config: ExperimentConfig, results: list[TrainingHistory], outp
         f.write("=" * 60 + "\n")
         for i, h in enumerate(sorted_results[:10], 1):
             f.write(f"{i:2d}. {h.val_accuracy * 100:.2f}% | {h.params}\n")
+
+
+def _save_llm_reasoning(output_dir: Path) -> None:
+    """Generate human-readable LLM reasoning summary."""
+    decisions_file = output_dir / "llm_decisions.json"
+    if not decisions_file.exists():
+        return
+    
+    with open(decisions_file) as f:
+        data = json.load(f)
+    
+    with open(output_dir / "llm_reasoning.txt", "w") as f:
+        for decision in data["decisions"]:
+            f.write("=" * 70 + "\n")
+            f.write(f"GENERATION {decision['generation']}\n")
+            f.write("=" * 70 + "\n\n")
+            f.write(decision["raw_response"] + "\n\n")

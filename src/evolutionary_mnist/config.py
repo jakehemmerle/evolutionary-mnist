@@ -23,7 +23,6 @@ class HyperParams:
 @dataclass
 class ExperimentConfig:
     name: str
-    seed: int
     schema: dict[str, dict]
     num_gpus: int
     workers_per_gpu: int
@@ -34,14 +33,12 @@ class ExperimentConfig:
 class LLMConfig:
     enabled: bool = False
     model: str = ""
-    temperature: float = 0.2
 
 
 @dataclass
 class EvolutionConfig:
     generations: int = 5
-    cap_per_generation: int = 8
-    elite_k: int = 4
+    runs_per_generation: int = 8
     llm: LLMConfig = field(default_factory=LLMConfig)
 
 
@@ -64,18 +61,15 @@ def load_config(path: str) -> ExperimentConfig:
 
     return ExperimentConfig(
         name=data["experiment"]["name"],
-        seed=data["experiment"]["seed"],
         schema=data["schema"],
         num_gpus=data["execution"]["num_gpus"],
         workers_per_gpu=data["execution"]["workers_per_gpu"],
         evolution=EvolutionConfig(
             generations=int(evo.get("generations", 5)),
-            cap_per_generation=int(evo.get("cap_per_generation", 8)),
-            elite_k=int(evo.get("elite_k", 4)),
+            runs_per_generation=int(evo.get("runs_per_generation", 8)),
             llm=LLMConfig(
                 enabled=bool(llm.get("enabled", True)),
                 model=str(llm.get("model", "")),
-                temperature=float(llm.get("temperature", 0.2)),
             ),
         ),
     )

@@ -1,0 +1,239 @@
+{
+  "decisions": [
+    {
+      "generation": 1,
+      "timestamp": "2025-12-30T15:41:57.218150",
+      "system_prompt": "You are a hyperparameter tuning assistant for neural network training.\n\nYou are running generation 1 of 5.\n\nYour response MUST follow this exact format:\n1. First, write your reasoning and analysis (what you learned from all previous results, why you're choosing these hyperparameters)\n2. Then, output your JSON array of training configurations inside a ```json code fence\n\nYou can output anywhere from 1 to 4 configs.\n\nThe JSON must be valid: an array of objects where each object has ALL these keys:\n['learning_rate', 'epochs', 'batch_size', 'cnn_channels', 'cnn_kernel_size', 'cnn_dropout', 'cnn_fc_hidden']\n\nSchema for each parameter:\n{\n  \"learning_rate\": {\n    \"type\": \"float\",\n    \"min\": 0.001,\n    \"max\": 0.5,\n    \"description\": \"Learning rate for optimizer\"\n  },\n  \"epochs\": {\n    \"type\": \"int\",\n    \"min\": 1,\n    \"max\": 5,\n    \"description\": \"Number of training epochs\"\n  },\n  \"batch_size\": {\n    \"type\": \"int\",\n    \"enum\": [\n      16,\n      32,\n      64,\n      128\n    ],\n    \"description\": \"Training batch size\"\n  },\n  \"cnn_channels\": {\n    \"type\": \"int\",\n    \"min\": 8,\n    \"max\": 128,\n    \"description\": \"CNN channel count\"\n  },\n  \"cnn_kernel_size\": {\n    \"type\": \"int\",\n    \"enum\": [\n      3,\n      5,\n      7\n    ],\n    \"description\": \"Convolution kernel size\"\n  },\n  \"cnn_dropout\": {\n    \"type\": \"float\",\n    \"min\": 0.0,\n    \"max\": 0.5,\n    \"description\": \"Dropout rate\"\n  },\n  \"cnn_fc_hidden\": {\n    \"type\": \"int\",\n    \"min\": 32,\n    \"max\": 512,\n    \"description\": \"Fully connected hidden layer size\"\n  }\n}\n\nThings to remember while reasoning:\n- Be more aggressive with your hyperparameter variations. Explore. We are trying to find the best hyperparameters overall.\n- Look at your best runs compared to your worst runs. What are the key differences? Explain from first principles why they were better and use that explination to guide your next generation. Bayesian inference!\n- Think from first principles about which hyperparameters likely improved the accuracy relative to the other hyperparameters and training runs.\n- DO NOT include duplicate configurations or configurations that have already been tried.",
+      "user_prompt": "{\"max_configs\": 4, \"schema\": {\"learning_rate\": {\"type\": \"float\", \"min\": 0.001, \"max\": 0.5, \"description\": \"Learning rate for optimizer\"}, \"epochs\": {\"type\": \"int\", \"min\": 1, \"max\": 5, \"description\": \"Number of training epochs\"}, \"batch_size\": {\"type\": \"int\", \"enum\": [16, 32, 64, 128], \"description\": \"Training batch size\"}, \"cnn_channels\": {\"type\": \"int\", \"min\": 8, \"max\": 128, \"description\": \"CNN channel count\"}, \"cnn_kernel_size\": {\"type\": \"int\", \"enum\": [3, 5, 7], \"description\": \"Convolution kernel size\"}, \"cnn_dropout\": {\"type\": \"float\", \"min\": 0.0, \"max\": 0.5, \"description\": \"Dropout rate\"}, \"cnn_fc_hidden\": {\"type\": \"int\", \"min\": 32, \"max\": 512, \"description\": \"Fully connected hidden layer size\"}}, \"previous_results\": [], \"instruction\": \"Propose up to 4 unique training configs as a JSON array. Use previous results to inform your choices. No duplicates.\"}",
+      "raw_response": "```json\n[\n  {\n    \"learning_rate\": 0.01,\n    \"epochs\": 3,\n    \"batch_size\": 64,\n    \"cnn_channels\": 64,\n    \"cnn_kernel_size\": 3,\n    \"cnn_dropout\": 0.2,\n    \"cnn_fc_hidden\": 256\n  },\n  {\n    \"learning_rate\": 0.001,\n    \"epochs\": 5,\n    \"batch_size\": 32,\n    \"cnn_channels\": 32,\n    \"cnn_kernel_size\": 5,\n    \"cnn_dropout\": 0.3,\n    \"cnn_fc_hidden\": 128\n  },\n  {\n    \"learning_rate\": 0.05,\n    \"epochs\": 2,\n    \"batch_size\": 128,\n    \"cnn_channels\": 128,\n    \"cnn_kernel_size\": 3,\n    \"cnn_dropout\": 0.1,\n    \"cnn_fc_hidden\": 512\n  },\n  {\n    \"learning_rate\": 0.02,\n    \"epochs\": 4,\n    \"batch_size\": 16,\n    \"cnn_channels\": 64,\n    \"cnn_kernel_size\": 7,\n    \"cnn_dropout\": 0.4,\n    \"cnn_fc_hidden\": 256\n  }\n]\n```",
+      "validated_configs": [
+        {
+          "learning_rate": 0.01,
+          "epochs": 3,
+          "batch_size": 64,
+          "cnn_channels": 64,
+          "cnn_kernel_size": 3,
+          "cnn_dropout": 0.2,
+          "cnn_fc_hidden": 256
+        },
+        {
+          "learning_rate": 0.001,
+          "epochs": 5,
+          "batch_size": 32,
+          "cnn_channels": 32,
+          "cnn_kernel_size": 5,
+          "cnn_dropout": 0.3,
+          "cnn_fc_hidden": 128
+        },
+        {
+          "learning_rate": 0.05,
+          "epochs": 2,
+          "batch_size": 128,
+          "cnn_channels": 128,
+          "cnn_kernel_size": 3,
+          "cnn_dropout": 0.1,
+          "cnn_fc_hidden": 512
+        },
+        {
+          "learning_rate": 0.02,
+          "epochs": 4,
+          "batch_size": 16,
+          "cnn_channels": 64,
+          "cnn_kernel_size": 7,
+          "cnn_dropout": 0.4,
+          "cnn_fc_hidden": 256
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    {
+      "generation": 2,
+      "timestamp": "2025-12-30T15:43:13.602249",
+      "system_prompt": "You are a hyperparameter tuning assistant for neural network training.\n\nYou are running generation 2 of 5.\n\nYour response MUST follow this exact format:\n1. First, write your reasoning and analysis (what you learned from all previous results, why you're choosing these hyperparameters)\n2. Then, output your JSON array of training configurations inside a ```json code fence\n\nYou can output anywhere from 1 to 4 configs.\n\nThe JSON must be valid: an array of objects where each object has ALL these keys:\n['learning_rate', 'epochs', 'batch_size', 'cnn_channels', 'cnn_kernel_size', 'cnn_dropout', 'cnn_fc_hidden']\n\nSchema for each parameter:\n{\n  \"learning_rate\": {\n    \"type\": \"float\",\n    \"min\": 0.001,\n    \"max\": 0.5,\n    \"description\": \"Learning rate for optimizer\"\n  },\n  \"epochs\": {\n    \"type\": \"int\",\n    \"min\": 1,\n    \"max\": 5,\n    \"description\": \"Number of training epochs\"\n  },\n  \"batch_size\": {\n    \"type\": \"int\",\n    \"enum\": [\n      16,\n      32,\n      64,\n      128\n    ],\n    \"description\": \"Training batch size\"\n  },\n  \"cnn_channels\": {\n    \"type\": \"int\",\n    \"min\": 8,\n    \"max\": 128,\n    \"description\": \"CNN channel count\"\n  },\n  \"cnn_kernel_size\": {\n    \"type\": \"int\",\n    \"enum\": [\n      3,\n      5,\n      7\n    ],\n    \"description\": \"Convolution kernel size\"\n  },\n  \"cnn_dropout\": {\n    \"type\": \"float\",\n    \"min\": 0.0,\n    \"max\": 0.5,\n    \"description\": \"Dropout rate\"\n  },\n  \"cnn_fc_hidden\": {\n    \"type\": \"int\",\n    \"min\": 32,\n    \"max\": 512,\n    \"description\": \"Fully connected hidden layer size\"\n  }\n}\n\nThings to remember while reasoning:\n- Be more aggressive with your hyperparameter variations. Explore. We are trying to find the best hyperparameters overall.\n- Look at your best runs compared to your worst runs. What are the key differences? Explain from first principles why they were better and use that explination to guide your next generation. Bayesian inference!\n- Think from first principles about which hyperparameters likely improved the accuracy relative to the other hyperparameters and training runs.\n- DO NOT include duplicate configurations or configurations that have already been tried.",
+      "user_prompt": "{\"max_configs\": 4, \"schema\": {\"learning_rate\": {\"type\": \"float\", \"min\": 0.001, \"max\": 0.5, \"description\": \"Learning rate for optimizer\"}, \"epochs\": {\"type\": \"int\", \"min\": 1, \"max\": 5, \"description\": \"Number of training epochs\"}, \"batch_size\": {\"type\": \"int\", \"enum\": [16, 32, 64, 128], \"description\": \"Training batch size\"}, \"cnn_channels\": {\"type\": \"int\", \"min\": 8, \"max\": 128, \"description\": \"CNN channel count\"}, \"cnn_kernel_size\": {\"type\": \"int\", \"enum\": [3, 5, 7], \"description\": \"Convolution kernel size\"}, \"cnn_dropout\": {\"type\": \"float\", \"min\": 0.0, \"max\": 0.5, \"description\": \"Dropout rate\"}, \"cnn_fc_hidden\": {\"type\": \"int\", \"min\": 32, \"max\": 512, \"description\": \"Fully connected hidden layer size\"}}, \"previous_results\": [{\"config\": {\"learning_rate\": 0.01, \"epochs\": 3, \"batch_size\": 64, \"cnn_channels\": 64, \"cnn_kernel_size\": 3, \"cnn_dropout\": 0.2, \"cnn_fc_hidden\": 256}, \"val_accuracy\": 0.9508333206176758, \"val_loss\": 0.16640621423721313, \"wall_time_seconds\": 17.749754529912025}, {\"config\": {\"learning_rate\": 0.05, \"epochs\": 2, \"batch_size\": 128, \"cnn_channels\": 128, \"cnn_kernel_size\": 3, \"cnn_dropout\": 0.1, \"cnn_fc_hidden\": 512}, \"val_accuracy\": 0.9683333039283752, \"val_loss\": 0.09778337925672531, \"wall_time_seconds\": 19.671272507868707}, {\"config\": {\"learning_rate\": 0.001, \"epochs\": 5, \"batch_size\": 32, \"cnn_channels\": 32, \"cnn_kernel_size\": 5, \"cnn_dropout\": 0.3, \"cnn_fc_hidden\": 128}, \"val_accuracy\": 0.9099999666213989, \"val_loss\": 0.3199774920940399, \"wall_time_seconds\": 42.17068357509561}, {\"config\": {\"learning_rate\": 0.02, \"epochs\": 4, \"batch_size\": 16, \"cnn_channels\": 64, \"cnn_kernel_size\": 7, \"cnn_dropout\": 0.4, \"cnn_fc_hidden\": 256}, \"val_accuracy\": 0.987500011920929, \"val_loss\": 0.04193681851029396, \"wall_time_seconds\": 59.56657025706954}], \"instruction\": \"Propose up to 4 unique training configs as a JSON array. Use previous results to inform your choices. No duplicates.\"}",
+      "raw_response": "Looking at the previous results, I can see a clear pattern:\n\n**Best performer (Config 4)**: LR=0.02, epochs=4, batch_size=16, channels=64, kernel=7, dropout=0.4, fc_hidden=256 \u2192 98.75% accuracy, 0.042 loss\n\n**Key insights:**\n- The best config used the **largest kernel (7)**, which likely captured better spatial features\n- **Small batch size (16)** seemed beneficial - more stochasticity = better generalization\n- **Moderate dropout (0.4)** helped prevent overfitting\n- The worst config (3) had **too low learning rate (0.001)** with a smaller network - caused underfitting\n- Higher learning rates (0.05) with very large batches worked decently but not as well\n\n**Strategy for generation 2:**\n- Build on Config 4's success by exploring variations around those parameters\n- Try increasing epochs to 5 to see if more training helps (without overfitting)\n- Push kernel_size=7 further (it's the best so far)\n- Experiment with slightly higher learning rates in the sweet spot\n- Try even smaller batch sizes (more noise = better generalization)\n- Vary network capacity to find the right balance\n\nHere are my 4 configurations:\n\n```json\n[\n  {\n    \"learning_rate\": 0.025,\n    \"epochs\": 5,\n    \"batch_size\": 16,\n    \"cnn_channels\": 64,\n    \"cnn_kernel_size\": 7,\n    \"cnn_dropout\": 0.35,\n    \"cnn_fc_hidden\": 256\n  },\n  {\n    \"learning_rate\": 0.03,\n    \"epochs\": 4,\n    \"batch_size\": 8,\n    \"cnn_channels\": 96,\n    \"cnn_kernel_size\": 7,\n    \"cnn_dropout\": 0.45,\n    \"cnn_fc_hidden\": 384\n  },\n  {\n    \"learning_rate\": 0.015,\n    \"epochs\": 5,\n    \"batch_size\": 32,\n    \"cnn_channels\": 48,\n    \"cnn_kernel_size\": 5,\n    \"cnn_dropout\": 0.3,\n    \"cnn_fc_hidden\": 192\n  },\n  {\n    \"learning_rate\": 0.04,\n    \"epochs\": 3,\n    \"batch_size\": 16,\n    \"cnn_channels\": 80,\n    \"cnn_kernel_size\": 7,\n    \"cnn_dropout\": 0.5,\n    \"cnn_fc_hidden\": 320\n  }\n]\n```",
+      "validated_configs": [
+        {
+          "learning_rate": 0.025,
+          "epochs": 5,
+          "batch_size": 16,
+          "cnn_channels": 64,
+          "cnn_kernel_size": 7,
+          "cnn_dropout": 0.35,
+          "cnn_fc_hidden": 256
+        },
+        {
+          "learning_rate": 0.03,
+          "epochs": 4,
+          "batch_size": 8,
+          "cnn_channels": 96,
+          "cnn_kernel_size": 7,
+          "cnn_dropout": 0.45,
+          "cnn_fc_hidden": 384
+        },
+        {
+          "learning_rate": 0.015,
+          "epochs": 5,
+          "batch_size": 32,
+          "cnn_channels": 48,
+          "cnn_kernel_size": 5,
+          "cnn_dropout": 0.3,
+          "cnn_fc_hidden": 192
+        },
+        {
+          "learning_rate": 0.04,
+          "epochs": 3,
+          "batch_size": 16,
+          "cnn_channels": 80,
+          "cnn_kernel_size": 7,
+          "cnn_dropout": 0.5,
+          "cnn_fc_hidden": 320
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    },
+    {
+      "generation": 3,
+      "timestamp": "2025-12-30T15:46:01.402893",
+      "system_prompt": "You are a hyperparameter tuning assistant for neural network training.\n\nYou are running generation 3 of 5.\n\nYour response MUST follow this exact format:\n1. First, write your reasoning and analysis (what you learned from all previous results, why you're choosing these hyperparameters)\n2. Then, output your JSON array of training configurations inside a ```json code fence\n\nYou can output anywhere from 1 to 4 configs.\n\nThe JSON must be valid: an array of objects where each object has ALL these keys:\n['learning_rate', 'epochs', 'batch_size', 'cnn_channels', 'cnn_kernel_size', 'cnn_dropout', 'cnn_fc_hidden']\n\nSchema for each parameter:\n{\n  \"learning_rate\": {\n    \"type\": \"float\",\n    \"min\": 0.001,\n    \"max\": 0.5,\n    \"description\": \"Learning rate for optimizer\"\n  },\n  \"epochs\": {\n    \"type\": \"int\",\n    \"min\": 1,\n    \"max\": 5,\n    \"description\": \"Number of training epochs\"\n  },\n  \"batch_size\": {\n    \"type\": \"int\",\n    \"enum\": [\n      16,\n      32,\n      64,\n      128\n    ],\n    \"description\": \"Training batch size\"\n  },\n  \"cnn_channels\": {\n    \"type\": \"int\",\n    \"min\": 8,\n    \"max\": 128,\n    \"description\": \"CNN channel count\"\n  },\n  \"cnn_kernel_size\": {\n    \"type\": \"int\",\n    \"enum\": [\n      3,\n      5,\n      7\n    ],\n    \"description\": \"Convolution kernel size\"\n  },\n  \"cnn_dropout\": {\n    \"type\": \"float\",\n    \"min\": 0.0,\n    \"max\": 0.5,\n    \"description\": \"Dropout rate\"\n  },\n  \"cnn_fc_hidden\": {\n    \"type\": \"int\",\n    \"min\": 32,\n    \"max\": 512,\n    \"description\": \"Fully connected hidden layer size\"\n  }\n}\n\nThings to remember while reasoning:\n- Be more aggressive with your hyperparameter variations. Explore. We are trying to find the best hyperparameters overall.\n- Look at your best runs compared to your worst runs. What are the key differences? Explain from first principles why they were better and use that explination to guide your next generation. Bayesian inference!\n- Think from first principles about which hyperparameters likely improved the accuracy relative to the other hyperparameters and training runs.\n- DO NOT include duplicate configurations or configurations that have already been tried.",
+      "user_prompt": "{\"max_configs\": 4, \"schema\": {\"learning_rate\": {\"type\": \"float\", \"min\": 0.001, \"max\": 0.5, \"description\": \"Learning rate for optimizer\"}, \"epochs\": {\"type\": \"int\", \"min\": 1, \"max\": 5, \"description\": \"Number of training epochs\"}, \"batch_size\": {\"type\": \"int\", \"enum\": [16, 32, 64, 128], \"description\": \"Training batch size\"}, \"cnn_channels\": {\"type\": \"int\", \"min\": 8, \"max\": 128, \"description\": \"CNN channel count\"}, \"cnn_kernel_size\": {\"type\": \"int\", \"enum\": [3, 5, 7], \"description\": \"Convolution kernel size\"}, \"cnn_dropout\": {\"type\": \"float\", \"min\": 0.0, \"max\": 0.5, \"description\": \"Dropout rate\"}, \"cnn_fc_hidden\": {\"type\": \"int\", \"min\": 32, \"max\": 512, \"description\": \"Fully connected hidden layer size\"}}, \"previous_results\": [{\"config\": {\"learning_rate\": 0.01, \"epochs\": 3, \"batch_size\": 64, \"cnn_channels\": 64, \"cnn_kernel_size\": 3, \"cnn_dropout\": 0.2, \"cnn_fc_hidden\": 256}, \"val_accuracy\": 0.9508333206176758, \"val_loss\": 0.16640621423721313, \"wall_time_seconds\": 17.749754529912025}, {\"config\": {\"learning_rate\": 0.05, \"epochs\": 2, \"batch_size\": 128, \"cnn_channels\": 128, \"cnn_kernel_size\": 3, \"cnn_dropout\": 0.1, \"cnn_fc_hidden\": 512}, \"val_accuracy\": 0.9683333039283752, \"val_loss\": 0.09778337925672531, \"wall_time_seconds\": 19.671272507868707}, {\"config\": {\"learning_rate\": 0.001, \"epochs\": 5, \"batch_size\": 32, \"cnn_channels\": 32, \"cnn_kernel_size\": 5, \"cnn_dropout\": 0.3, \"cnn_fc_hidden\": 128}, \"val_accuracy\": 0.9099999666213989, \"val_loss\": 0.3199774920940399, \"wall_time_seconds\": 42.17068357509561}, {\"config\": {\"learning_rate\": 0.02, \"epochs\": 4, \"batch_size\": 16, \"cnn_channels\": 64, \"cnn_kernel_size\": 7, \"cnn_dropout\": 0.4, \"cnn_fc_hidden\": 256}, \"val_accuracy\": 0.987500011920929, \"val_loss\": 0.04193681851029396, \"wall_time_seconds\": 59.56657025706954}, {\"config\": {\"learning_rate\": 0.015, \"epochs\": 5, \"batch_size\": 32, \"cnn_channels\": 48, \"cnn_kernel_size\": 5, \"cnn_dropout\": 0.3, \"cnn_fc_hidden\": 192}, \"val_accuracy\": 0.9825000166893005, \"val_loss\": 0.050340913236141205, \"wall_time_seconds\": 46.18972866702825}, {\"config\": {\"learning_rate\": 0.04, \"epochs\": 3, \"batch_size\": 16, \"cnn_channels\": 80, \"cnn_kernel_size\": 7, \"cnn_dropout\": 0.5, \"cnn_fc_hidden\": 320}, \"val_accuracy\": 0.9889999628067017, \"val_loss\": 0.034337032586336136, \"wall_time_seconds\": 46.683885695179924}, {\"config\": {\"learning_rate\": 0.025, \"epochs\": 5, \"batch_size\": 16, \"cnn_channels\": 64, \"cnn_kernel_size\": 7, \"cnn_dropout\": 0.35, \"cnn_fc_hidden\": 256}, \"val_accuracy\": 0.9879999756813049, \"val_loss\": 0.03762887790799141, \"wall_time_seconds\": 67.35052346717566}, {\"config\": {\"learning_rate\": 0.03, \"epochs\": 4, \"batch_size\": 8, \"cnn_channels\": 96, \"cnn_kernel_size\": 7, \"cnn_dropout\": 0.45, \"cnn_fc_hidden\": 384}, \"val_accuracy\": 0.9911666512489319, \"val_loss\": 0.033835671842098236, \"wall_time_seconds\": 114.53483192808926}], \"instruction\": \"Propose up to 4 unique training configs as a JSON array. Use previous results to inform your choices. No duplicates.\"}",
+      "raw_response": "```json\n[\n  {\n    \"learning_rate\": 0.035,\n    \"epochs\": 4,\n    \"batch_size\": 8,\n    \"cnn_channels\": 112,\n    \"cnn_kernel_size\": 7,\n    \"cnn_dropout\": 0.45,\n    \"cnn_fc_hidden\": 448\n  },\n  {\n    \"learning_rate\": 0.045,\n    \"epochs\": 3,\n    \"batch_size\": 8,\n    \"cnn_channels\": 128,\n    \"cnn_kernel_size\": 7,\n    \"cnn_dropout\": 0.5,\n    \"cnn_fc_hidden\": 512\n  },\n  {\n    \"learning_rate\": 0.028,\n    \"epochs\": 5,\n    \"batch_size\": 8,\n    \"cnn_channels\": 96,\n    \"cnn_kernel_size\": 7,\n    \"cnn_dropout\": 0.4,\n    \"cnn_fc_hidden\": 384\n  },\n  {\n    \"learning_rate\": 0.05,\n    \"epochs\": 4,\n    \"batch_size\": 16,\n    \"cnn_channels\": 96,\n    \"cnn_kernel_size\": 7,\n    \"cnn_dropout\": 0.48,\n    \"cnn_fc_hidden\": 448\n  }\n]\n```",
+      "validated_configs": [
+        {
+          "learning_rate": 0.035,
+          "epochs": 4,
+          "batch_size": 8,
+          "cnn_channels": 112,
+          "cnn_kernel_size": 7,
+          "cnn_dropout": 0.45,
+          "cnn_fc_hidden": 448
+        },
+        {
+          "learning_rate": 0.045,
+          "epochs": 3,
+          "batch_size": 8,
+          "cnn_channels": 128,
+          "cnn_kernel_size": 7,
+          "cnn_dropout": 0.5,
+          "cnn_fc_hidden": 512
+        },
+        {
+          "learning_rate": 0.028,
+          "epochs": 5,
+          "batch_size": 8,
+          "cnn_channels": 96,
+          "cnn_kernel_size": 7,
+          "cnn_dropout": 0.4,
+          "cnn_fc_hidden": 384
+        },
+        {
+          "learning_rate": 0.05,
+          "epochs": 4,
+          "batch_size": 16,
+          "cnn_channels": 96,
+          "cnn_kernel_size": 7,
+          "cnn_dropout": 0.48,
+          "cnn_fc_hidden": 448
+        }
+      ],
+      "error": null,
+      "attempts": 2
+    },
+    {
+      "generation": 4,
+      "timestamp": "2025-12-30T15:49:21.850570",
+      "system_prompt": "You are a hyperparameter tuning assistant for neural network training.\n\nYou are running generation 4 of 5.\n\nYour response MUST follow this exact format:\n1. First, write your reasoning and analysis (what you learned from all previous results, why you're choosing these hyperparameters)\n2. Then, output your JSON array of training configurations inside a ```json code fence\n\nYou can output anywhere from 1 to 4 configs.\n\nThe JSON must be valid: an array of objects where each object has ALL these keys:\n['learning_rate', 'epochs', 'batch_size', 'cnn_channels', 'cnn_kernel_size', 'cnn_dropout', 'cnn_fc_hidden']\n\nSchema for each parameter:\n{\n  \"learning_rate\": {\n    \"type\": \"float\",\n    \"min\": 0.001,\n    \"max\": 0.5,\n    \"description\": \"Learning rate for optimizer\"\n  },\n  \"epochs\": {\n    \"type\": \"int\",\n    \"min\": 1,\n    \"max\": 5,\n    \"description\": \"Number of training epochs\"\n  },\n  \"batch_size\": {\n    \"type\": \"int\",\n    \"enum\": [\n      16,\n      32,\n      64,\n      128\n    ],\n    \"description\": \"Training batch size\"\n  },\n  \"cnn_channels\": {\n    \"type\": \"int\",\n    \"min\": 8,\n    \"max\": 128,\n    \"description\": \"CNN channel count\"\n  },\n  \"cnn_kernel_size\": {\n    \"type\": \"int\",\n    \"enum\": [\n      3,\n      5,\n      7\n    ],\n    \"description\": \"Convolution kernel size\"\n  },\n  \"cnn_dropout\": {\n    \"type\": \"float\",\n    \"min\": 0.0,\n    \"max\": 0.5,\n    \"description\": \"Dropout rate\"\n  },\n  \"cnn_fc_hidden\": {\n    \"type\": \"int\",\n    \"min\": 32,\n    \"max\": 512,\n    \"description\": \"Fully connected hidden layer size\"\n  }\n}\n\nThings to remember while reasoning:\n- Be more aggressive with your hyperparameter variations. Explore. We are trying to find the best hyperparameters overall.\n- Look at your best runs compared to your worst runs. What are the key differences? Explain from first principles why they were better and use that explination to guide your next generation. Bayesian inference!\n- Think from first principles about which hyperparameters likely improved the accuracy relative to the other hyperparameters and training runs.\n- DO NOT include duplicate configurations or configurations that have already been tried.",
+      "user_prompt": "{\"max_configs\": 4, \"schema\": {\"learning_rate\": {\"type\": \"float\", \"min\": 0.001, \"max\": 0.5, \"description\": \"Learning rate for optimizer\"}, \"epochs\": {\"type\": \"int\", \"min\": 1, \"max\": 5, \"description\": \"Number of training epochs\"}, \"batch_size\": {\"type\": \"int\", \"enum\": [16, 32, 64, 128], \"description\": \"Training batch size\"}, \"cnn_channels\": {\"type\": \"int\", \"min\": 8, \"max\": 128, \"description\": \"CNN channel count\"}, \"cnn_kernel_size\": {\"type\": \"int\", \"enum\": [3, 5, 7], \"description\": \"Convolution kernel size\"}, \"cnn_dropout\": {\"type\": \"float\", \"min\": 0.0, \"max\": 0.5, \"description\": \"Dropout rate\"}, \"cnn_fc_hidden\": {\"type\": \"int\", \"min\": 32, \"max\": 512, \"description\": \"Fully connected hidden layer size\"}}, \"previous_results\": [{\"config\": {\"learning_rate\": 0.01, \"epochs\": 3, \"batch_size\": 64, \"cnn_channels\": 64, \"cnn_kernel_size\": 3, \"cnn_dropout\": 0.2, \"cnn_fc_hidden\": 256}, \"val_accuracy\": 0.9508333206176758, \"val_loss\": 0.16640621423721313, \"wall_time_seconds\": 17.749754529912025}, {\"config\": {\"learning_rate\": 0.05, \"epochs\": 2, \"batch_size\": 128, \"cnn_channels\": 128, \"cnn_kernel_size\": 3, \"cnn_dropout\": 0.1, \"cnn_fc_hidden\": 512}, \"val_accuracy\": 0.9683333039283752, \"val_loss\": 0.09778337925672531, \"wall_time_seconds\": 19.671272507868707}, {\"config\": {\"learning_rate\": 0.001, \"epochs\": 5, \"batch_size\": 32, \"cnn_channels\": 32, \"cnn_kernel_size\": 5, \"cnn_dropout\": 0.3, \"cnn_fc_hidden\": 128}, \"val_accuracy\": 0.9099999666213989, \"val_loss\": 0.3199774920940399, \"wall_time_seconds\": 42.17068357509561}, {\"config\": {\"learning_rate\": 0.02, \"epochs\": 4, \"batch_size\": 16, \"cnn_channels\": 64, \"cnn_kernel_size\": 7, \"cnn_dropout\": 0.4, \"cnn_fc_hidden\": 256}, \"val_accuracy\": 0.987500011920929, \"val_loss\": 0.04193681851029396, \"wall_time_seconds\": 59.56657025706954}, {\"config\": {\"learning_rate\": 0.015, \"epochs\": 5, \"batch_size\": 32, \"cnn_channels\": 48, \"cnn_kernel_size\": 5, \"cnn_dropout\": 0.3, \"cnn_fc_hidden\": 192}, \"val_accuracy\": 0.9825000166893005, \"val_loss\": 0.050340913236141205, \"wall_time_seconds\": 46.18972866702825}, {\"config\": {\"learning_rate\": 0.04, \"epochs\": 3, \"batch_size\": 16, \"cnn_channels\": 80, \"cnn_kernel_size\": 7, \"cnn_dropout\": 0.5, \"cnn_fc_hidden\": 320}, \"val_accuracy\": 0.9889999628067017, \"val_loss\": 0.034337032586336136, \"wall_time_seconds\": 46.683885695179924}, {\"config\": {\"learning_rate\": 0.025, \"epochs\": 5, \"batch_size\": 16, \"cnn_channels\": 64, \"cnn_kernel_size\": 7, \"cnn_dropout\": 0.35, \"cnn_fc_hidden\": 256}, \"val_accuracy\": 0.9879999756813049, \"val_loss\": 0.03762887790799141, \"wall_time_seconds\": 67.35052346717566}, {\"config\": {\"learning_rate\": 0.03, \"epochs\": 4, \"batch_size\": 8, \"cnn_channels\": 96, \"cnn_kernel_size\": 7, \"cnn_dropout\": 0.45, \"cnn_fc_hidden\": 384}, \"val_accuracy\": 0.9911666512489319, \"val_loss\": 0.033835671842098236, \"wall_time_seconds\": 114.53483192808926}, {\"config\": {\"learning_rate\": 0.05, \"epochs\": 4, \"batch_size\": 16, \"cnn_channels\": 96, \"cnn_kernel_size\": 7, \"cnn_dropout\": 0.48, \"cnn_fc_hidden\": 448}, \"val_accuracy\": 0.9909999966621399, \"val_loss\": 0.03239511325955391, \"wall_time_seconds\": 61.07546274107881}, {\"config\": {\"learning_rate\": 0.045, \"epochs\": 3, \"batch_size\": 8, \"cnn_channels\": 128, \"cnn_kernel_size\": 7, \"cnn_dropout\": 0.5, \"cnn_fc_hidden\": 512}, \"val_accuracy\": 0.9904999732971191, \"val_loss\": 0.034135572612285614, \"wall_time_seconds\": 89.6121424480807}, {\"config\": {\"learning_rate\": 0.035, \"epochs\": 4, \"batch_size\": 8, \"cnn_channels\": 112, \"cnn_kernel_size\": 7, \"cnn_dropout\": 0.45, \"cnn_fc_hidden\": 448}, \"val_accuracy\": 0.9918333292007446, \"val_loss\": 0.03299011290073395, \"wall_time_seconds\": 116.25908018904738}, {\"config\": {\"learning_rate\": 0.028, \"epochs\": 5, \"batch_size\": 8, \"cnn_channels\": 96, \"cnn_kernel_size\": 7, \"cnn_dropout\": 0.4, \"cnn_fc_hidden\": 384}, \"val_accuracy\": 0.9909999966621399, \"val_loss\": 0.02897386997938156, \"wall_time_seconds\": 141.6556732750032}], \"instruction\": \"Propose up to 4 unique training configs as a JSON array. Use previous results to inform your choices. No duplicates.\"}",
+      "raw_response": "```json\n[\n  {\n    \"learning_rate\": 0.032,\n    \"epochs\": 5,\n    \"batch_size\": 8,\n    \"cnn_channels\": 112,\n    \"cnn_kernel_size\": 7,\n    \"cnn_dropout\": 0.42,\n    \"cnn_fc_hidden\": 448\n  },\n  {\n    \"learning_rate\": 0.026,\n    \"epochs\": 5,\n    \"batch_size\": 8,\n    \"cnn_channels\": 96,\n    \"cnn_kernel_size\": 7,\n    \"cnn_dropout\": 0.38,\n    \"cnn_fc_hidden\": 384\n  },\n  {\n    \"learning_rate\": 0.035,\n    \"epochs\": 5,\n    \"batch_size\": 8,\n    \"cnn_channels\": 128,\n    \"cnn_kernel_size\": 7,\n    \"cnn_dropout\": 0.45,\n    \"cnn_fc_hidden\": 512\n  },\n  {\n    \"learning_rate\": 0.03,\n    \"epochs\": 5,\n    \"batch_size\": 8,\n    \"cnn_channels\": 120,\n    \"cnn_kernel_size\": 7,\n    \"cnn_dropout\": 0.44,\n    \"cnn_fc_hidden\": 480\n  }\n]\n```",
+      "validated_configs": [
+        {
+          "learning_rate": 0.032,
+          "epochs": 5,
+          "batch_size": 8,
+          "cnn_channels": 112,
+          "cnn_kernel_size": 7,
+          "cnn_dropout": 0.42,
+          "cnn_fc_hidden": 448
+        },
+        {
+          "learning_rate": 0.026,
+          "epochs": 5,
+          "batch_size": 8,
+          "cnn_channels": 96,
+          "cnn_kernel_size": 7,
+          "cnn_dropout": 0.38,
+          "cnn_fc_hidden": 384
+        },
+        {
+          "learning_rate": 0.035,
+          "epochs": 5,
+          "batch_size": 8,
+          "cnn_channels": 128,
+          "cnn_kernel_size": 7,
+          "cnn_dropout": 0.45,
+          "cnn_fc_hidden": 512
+        },
+        {
+          "learning_rate": 0.03,
+          "epochs": 5,
+          "batch_size": 8,
+          "cnn_channels": 120,
+          "cnn_kernel_size": 7,
+          "cnn_dropout": 0.44,
+          "cnn_fc_hidden": 480
+        }
+      ],
+      "error": null,
+      "attempts": 2
+    },
+    {
+      "generation": 5,
+      "timestamp": "2025-12-30T15:52:02.573366",
+      "system_prompt": "You are a hyperparameter tuning assistant for neural network training.\n\nYou are running generation 5 of 5.\n\nYour response MUST follow this exact format:\n1. First, write your reasoning and analysis (what you learned from all previous results, why you're choosing these hyperparameters)\n2. Then, output your JSON array of training configurations inside a ```json code fence\n\nYou can output anywhere from 1 to 4 configs.\n\nThe JSON must be valid: an array of objects where each object has ALL these keys:\n['learning_rate', 'epochs', 'batch_size', 'cnn_channels', 'cnn_kernel_size', 'cnn_dropout', 'cnn_fc_hidden']\n\nSchema for each parameter:\n{\n  \"learning_rate\": {\n    \"type\": \"float\",\n    \"min\": 0.001,\n    \"max\": 0.5,\n    \"description\": \"Learning rate for optimizer\"\n  },\n  \"epochs\": {\n    \"type\": \"int\",\n    \"min\": 1,\n    \"max\": 5,\n    \"description\": \"Number of training epochs\"\n  },\n  \"batch_size\": {\n    \"type\": \"int\",\n    \"enum\": [\n      16,\n      32,\n      64,\n      128\n    ],\n    \"description\": \"Training batch size\"\n  },\n  \"cnn_channels\": {\n    \"type\": \"int\",\n    \"min\": 8,\n    \"max\": 128,\n    \"description\": \"CNN channel count\"\n  },\n  \"cnn_kernel_size\": {\n    \"type\": \"int\",\n    \"enum\": [\n      3,\n      5,\n      7\n    ],\n    \"description\": \"Convolution kernel size\"\n  },\n  \"cnn_dropout\": {\n    \"type\": \"float\",\n    \"min\": 0.0,\n    \"max\": 0.5,\n    \"description\": \"Dropout rate\"\n  },\n  \"cnn_fc_hidden\": {\n    \"type\": \"int\",\n    \"min\": 32,\n    \"max\": 512,\n    \"description\": \"Fully connected hidden layer size\"\n  }\n}\n\nThings to remember while reasoning:\n- Be more aggressive with your hyperparameter variations. Explore. We are trying to find the best hyperparameters overall.\n- Look at your best runs compared to your worst runs. What are the key differences? Explain from first principles why they were better and use that explination to guide your next generation. Bayesian inference!\n- Think from first principles about which hyperparameters likely improved the accuracy relative to the other hyperparameters and training runs.\n- DO NOT include duplicate configurations or configurations that have already been tried.",
+      "user_prompt": "{\"max_configs\": 4, \"schema\": {\"learning_rate\": {\"type\": \"float\", \"min\": 0.001, \"max\": 0.5, \"description\": \"Learning rate for optimizer\"}, \"epochs\": {\"type\": \"int\", \"min\": 1, \"max\": 5, \"description\": \"Number of training epochs\"}, \"batch_size\": {\"type\": \"int\", \"enum\": [16, 32, 64, 128], \"description\": \"Training batch size\"}, \"cnn_channels\": {\"type\": \"int\", \"min\": 8, \"max\": 128, \"description\": \"CNN channel count\"}, \"cnn_kernel_size\": {\"type\": \"int\", \"enum\": [3, 5, 7], \"description\": \"Convolution kernel size\"}, \"cnn_dropout\": {\"type\": \"float\", \"min\": 0.0, \"max\": 0.5, \"description\": \"Dropout rate\"}, \"cnn_fc_hidden\": {\"type\": \"int\", \"min\": 32, \"max\": 512, \"description\": \"Fully connected hidden layer size\"}}, \"previous_results\": [{\"config\": {\"learning_rate\": 0.01, \"epochs\": 3, \"batch_size\": 64, \"cnn_channels\": 64, \"cnn_kernel_size\": 3, \"cnn_dropout\": 0.2, \"cnn_fc_hidden\": 256}, \"val_accuracy\": 0.9508333206176758, \"val_loss\": 0.16640621423721313, \"wall_time_seconds\": 17.749754529912025}, {\"config\": {\"learning_rate\": 0.05, \"epochs\": 2, \"batch_size\": 128, \"cnn_channels\": 128, \"cnn_kernel_size\": 3, \"cnn_dropout\": 0.1, \"cnn_fc_hidden\": 512}, \"val_accuracy\": 0.9683333039283752, \"val_loss\": 0.09778337925672531, \"wall_time_seconds\": 19.671272507868707}, {\"config\": {\"learning_rate\": 0.001, \"epochs\": 5, \"batch_size\": 32, \"cnn_channels\": 32, \"cnn_kernel_size\": 5, \"cnn_dropout\": 0.3, \"cnn_fc_hidden\": 128}, \"val_accuracy\": 0.9099999666213989, \"val_loss\": 0.3199774920940399, \"wall_time_seconds\": 42.17068357509561}, {\"config\": {\"learning_rate\": 0.02, \"epochs\": 4, \"batch_size\": 16, \"cnn_channels\": 64, \"cnn_kernel_size\": 7, \"cnn_dropout\": 0.4, \"cnn_fc_hidden\": 256}, \"val_accuracy\": 0.987500011920929, \"val_loss\": 0.04193681851029396, \"wall_time_seconds\": 59.56657025706954}, {\"config\": {\"learning_rate\": 0.015, \"epochs\": 5, \"batch_size\": 32, \"cnn_channels\": 48, \"cnn_kernel_size\": 5, \"cnn_dropout\": 0.3, \"cnn_fc_hidden\": 192}, \"val_accuracy\": 0.9825000166893005, \"val_loss\": 0.050340913236141205, \"wall_time_seconds\": 46.18972866702825}, {\"config\": {\"learning_rate\": 0.04, \"epochs\": 3, \"batch_size\": 16, \"cnn_channels\": 80, \"cnn_kernel_size\": 7, \"cnn_dropout\": 0.5, \"cnn_fc_hidden\": 320}, \"val_accuracy\": 0.9889999628067017, \"val_loss\": 0.034337032586336136, \"wall_time_seconds\": 46.683885695179924}, {\"config\": {\"learning_rate\": 0.025, \"epochs\": 5, \"batch_size\": 16, \"cnn_channels\": 64, \"cnn_kernel_size\": 7, \"cnn_dropout\": 0.35, \"cnn_fc_hidden\": 256}, \"val_accuracy\": 0.9879999756813049, \"val_loss\": 0.03762887790799141, \"wall_time_seconds\": 67.35052346717566}, {\"config\": {\"learning_rate\": 0.03, \"epochs\": 4, \"batch_size\": 8, \"cnn_channels\": 96, \"cnn_kernel_size\": 7, \"cnn_dropout\": 0.45, \"cnn_fc_hidden\": 384}, \"val_accuracy\": 0.9911666512489319, \"val_loss\": 0.033835671842098236, \"wall_time_seconds\": 114.53483192808926}, {\"config\": {\"learning_rate\": 0.05, \"epochs\": 4, \"batch_size\": 16, \"cnn_channels\": 96, \"cnn_kernel_size\": 7, \"cnn_dropout\": 0.48, \"cnn_fc_hidden\": 448}, \"val_accuracy\": 0.9909999966621399, \"val_loss\": 0.03239511325955391, \"wall_time_seconds\": 61.07546274107881}, {\"config\": {\"learning_rate\": 0.045, \"epochs\": 3, \"batch_size\": 8, \"cnn_channels\": 128, \"cnn_kernel_size\": 7, \"cnn_dropout\": 0.5, \"cnn_fc_hidden\": 512}, \"val_accuracy\": 0.9904999732971191, \"val_loss\": 0.034135572612285614, \"wall_time_seconds\": 89.6121424480807}, {\"config\": {\"learning_rate\": 0.035, \"epochs\": 4, \"batch_size\": 8, \"cnn_channels\": 112, \"cnn_kernel_size\": 7, \"cnn_dropout\": 0.45, \"cnn_fc_hidden\": 448}, \"val_accuracy\": 0.9918333292007446, \"val_loss\": 0.03299011290073395, \"wall_time_seconds\": 116.25908018904738}, {\"config\": {\"learning_rate\": 0.028, \"epochs\": 5, \"batch_size\": 8, \"cnn_channels\": 96, \"cnn_kernel_size\": 7, \"cnn_dropout\": 0.4, \"cnn_fc_hidden\": 384}, \"val_accuracy\": 0.9909999966621399, \"val_loss\": 0.02897386997938156, \"wall_time_seconds\": 141.6556732750032}, {\"config\": {\"learning_rate\": 0.032, \"epochs\": 5, \"batch_size\": 8, \"cnn_channels\": 112, \"cnn_kernel_size\": 7, \"cnn_dropout\": 0.42, \"cnn_fc_hidden\": 448}, \"val_accuracy\": 0.9891666769981384, \"val_loss\": 0.04120861366391182, \"wall_time_seconds\": 129.47353289392777}, {\"config\": {\"learning_rate\": 0.026, \"epochs\": 5, \"batch_size\": 8, \"cnn_channels\": 96, \"cnn_kernel_size\": 7, \"cnn_dropout\": 0.38, \"cnn_fc_hidden\": 384}, \"val_accuracy\": 0.9909999966621399, \"val_loss\": 0.03334149345755577, \"wall_time_seconds\": 140.30570245883428}, {\"config\": {\"learning_rate\": 0.035, \"epochs\": 5, \"batch_size\": 8, \"cnn_channels\": 128, \"cnn_kernel_size\": 7, \"cnn_dropout\": 0.45, \"cnn_fc_hidden\": 512}, \"val_accuracy\": 0.9916666746139526, \"val_loss\": 0.0348314605653286, \"wall_time_seconds\": 143.08163121715188}, {\"config\": {\"learning_rate\": 0.03, \"epochs\": 5, \"batch_size\": 8, \"cnn_channels\": 120, \"cnn_kernel_size\": 7, \"cnn_dropout\": 0.44, \"cnn_fc_hidden\": 480}, \"val_accuracy\": 0.9913333058357239, \"val_loss\": 0.03223969414830208, \"wall_time_seconds\": 143.58881925791502}], \"instruction\": \"Propose up to 4 unique training configs as a JSON array. Use previous results to inform your choices. No duplicates.\"}",
+      "raw_response": "Looking at the previous results, I can see clear patterns in what makes configurations perform well:\n\n**Key Findings from Analysis:**\n1. **Best configurations consistently use kernel size 7** - All top 8 configs with >99% accuracy use kernel_size=7\n2. **Small batch sizes (8) perform best** - The highest accuracies all use batch_size=8\n3. **Higher channel counts (96-128)** correlate with better performance\n4. **Learning rates around 0.03-0.035 are optimal** - This sweet spot balances convergence speed with stability\n5. **Moderate-high dropout (0.38-0.5)** helps prevent overfitting\n6. **Larger fc_hidden layers (384-512)** improve capacity\n7. **4-5 epochs** provides sufficient training without overfitting\n\nThe absolute best result (0.991833) used: lr=0.035, epochs=4, batch_size=8, channels=112, kernel=7, dropout=0.45, fc_hidden=448\n\nMy strategy for generation 5 is to explore even more aggressive configurations:\n- Push channels to the max (128)\n- Test lr slightly below 0.035 (0.028-0.032) to see if we can find another sweet spot\n- Extend training to 5 epochs with best configs\n- Maintain the optimal kernel_size=7 and batch_size=8\n\n```json\n[\n  {\n    \"learning_rate\": 0.028,\n    \"epochs\": 5,\n    \"batch_size\": 8,\n    \"cnn_channels\": 128,\n    \"cnn_kernel_size\": 7,\n    \"cnn_dropout\": 0.4,\n    \"cnn_fc_hidden\": 512\n  },\n  {\n    \"learning_rate\": 0.032,\n    \"epochs\": 5,\n    \"batch_size\": 8,\n    \"cnn_channels\": 128,\n    \"cnn_kernel_size\": 7,\n    \"cnn_dropout\": 0.43,\n    \"cnn_fc_hidden\": 480\n  },\n  {\n    \"learning_rate\": 0.034,\n    \"epochs\": 5,\n    \"batch_size\": 8,\n    \"cnn_channels\": 120,\n    \"cnn_kernel_size\": 7,\n    \"cnn_dropout\": 0.46,\n    \"cnn_fc_hidden\": 448\n  },\n  {\n    \"learning_rate\": 0.031,\n    \"epochs\": 5,\n    \"batch_size\": 8,\n    \"cnn_channels\": 112,\n    \"cnn_kernel_size\": 7,\n    \"cnn_dropout\": 0.42,\n    \"cnn_fc_hidden\": 384\n  }\n]\n```Looking at the previous results, I can see clear patterns in what makes configurations perform well:\n\n**Key Findings from Analysis:**\n1. **Best configurations consistently use kernel size 7** - All top 8 configs with >99% accuracy use kernel_size=7\n2. **Small batch sizes (8) perform best** - The highest accuracies all use batch_size=8\n3. **Higher channel counts (96-128)** correlate with better performance\n4. **Learning rates around 0.03-0.035 are optimal** - This sweet spot balances convergence speed with stability\n5. **Moderate-high dropout (0.38-0.5)** helps prevent overfitting\n6. **Larger fc_hidden layers (384-512)** improve capacity\n7. **4-5 epochs** provides sufficient training without overfitting\n\nThe absolute best result (0.991833) used: lr=0.035, epochs=4, batch_size=8, channels=112, kernel=7, dropout=0.45, fc_hidden=448\n\nMy strategy for generation 5 is to explore even more aggressive configurations:\n- Push channels to the max (128)\n- Test lr slightly below 0.035 (0.028-0.032) to see if we can find another sweet spot\n- Extend training to 5 epochs with best configs\n- Maintain the optimal kernel_size=7 and batch_size=8\n\n```json\n[\n  {\n    \"learning_rate\": 0.028,\n    \"epochs\": 5,\n    \"batch_size\": 8,\n    \"cnn_channels\": 128,\n    \"cnn_kernel_size\": 7,\n    \"cnn_dropout\": 0.4,\n    \"cnn_fc_hidden\": 512\n  },\n  {\n    \"learning_rate\": 0.032,\n    \"epochs\": 5,\n    \"batch_size\": 8,\n    \"cnn_channels\": 128,\n    \"cnn_kernel_size\": 7,\n    \"cnn_dropout\": 0.43,\n    \"cnn_fc_hidden\": 480\n  },\n  {\n    \"learning_rate\": 0.034,\n    \"epochs\": 5,\n    \"batch_size\": 8,\n    \"cnn_channels\": 120,\n    \"cnn_kernel_size\": 7,\n    \"cnn_dropout\": 0.46,\n    \"cnn_fc_hidden\": 448\n  },\n  {\n    \"learning_rate\": 0.031,\n    \"epochs\": 5,\n    \"batch_size\": 8,\n    \"cnn_channels\": 112,\n    \"cnn_kernel_size\": 7,\n    \"cnn_dropout\": 0.42,\n    \"cnn_fc_hidden\": 384\n  }\n]\n```",
+      "validated_configs": [
+        {
+          "learning_rate": 0.028,
+          "epochs": 5,
+          "batch_size": 8,
+          "cnn_channels": 128,
+          "cnn_kernel_size": 7,
+          "cnn_dropout": 0.4,
+          "cnn_fc_hidden": 512
+        },
+        {
+          "learning_rate": 0.032,
+          "epochs": 5,
+          "batch_size": 8,
+          "cnn_channels": 128,
+          "cnn_kernel_size": 7,
+          "cnn_dropout": 0.43,
+          "cnn_fc_hidden": 480
+        },
+        {
+          "learning_rate": 0.034,
+          "epochs": 5,
+          "batch_size": 8,
+          "cnn_channels": 120,
+          "cnn_kernel_size": 7,
+          "cnn_dropout": 0.46,
+          "cnn_fc_hidden": 448
+        },
+        {
+          "learning_rate": 0.031,
+          "epochs": 5,
+          "batch_size": 8,
+          "cnn_channels": 112,
+          "cnn_kernel_size": 7,
+          "cnn_dropout": 0.42,
+          "cnn_fc_hidden": 384
+        }
+      ],
+      "error": null,
+      "attempts": 1
+    }
+  ]
+}

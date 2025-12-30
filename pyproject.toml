@@ -1,19 +1,27 @@
 [project]
-name = "mnist"
+name = "evolutionary-mnist"
 version = "0.1.0"
-description = "Add your description here"
+description = "LLM-guided hyperparameter evolution for MNIST"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "matplotlib>=3.10.8",
     "pandas>=2.3.3",
     "pillow>=12.0.0",
-    "plotly>=5.24.0",
     "pydantic>=2.0.0",
     "pyarrow>=22.0.0",
     "requests>=2.32.0",
-    "streamlit>=1.40.0",
     "tomli>=2.3.0",
     "torch>=2.9.1",
     "python-dotenv>=1.2.1",
 ]
+
+[project.scripts]
+evolutionary-mnist = "evolutionary_mnist.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/evolutionary_mnist"]

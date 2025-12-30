@@ -1,4 +1,5 @@
 import json
+import re
 import sys
 from dataclasses import asdict
 from datetime import datetime
@@ -8,12 +9,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from config import ExperimentConfig, HyperParams, TrainingHistory, load_config
-from data import load_dataset
-from evolution.advisor import propose_next_generation_configs
-from results import save_results
-from search import run_configs
-from visualization import generate_charts
+from evolutionary_mnist.config import ExperimentConfig, HyperParams, TrainingHistory, load_config
+from evolutionary_mnist.data import load_dataset
+from evolutionary_mnist.evolution.advisor import propose_next_generation_configs
+from evolutionary_mnist.results import save_results
+from evolutionary_mnist.search import run_configs
+from evolutionary_mnist.charts import generate_charts
 
 
 def print_configs_table(configs: list[HyperParams], title: str = "Configurations") -> None:
@@ -82,7 +83,10 @@ def print_results_table(results: list[TrainingHistory], title: str = "Results") 
         ("#", lambda rank, i, r: str(i), 3, "right"),
         ("LR", lambda rank, i, r: f"{r.params.learning_rate:.0e}", 8, "right"),
         ("BS", lambda rank, i, r: str(r.params.batch_size), 4, "right"),
+        ("Ep", lambda rank, i, r: str(r.params.epochs), 3, "right"),
         ("Ch", lambda rank, i, r: str(r.params.cnn_channels), 4, "right"),
+        ("K", lambda rank, i, r: str(r.params.cnn_kernel_size), 3, "right"),
+        ("Drop", lambda rank, i, r: f"{r.params.cnn_dropout:.1f}", 4, "right"),
         ("FC", lambda rank, i, r: str(r.params.cnn_fc_hidden), 4, "right"),
         ("Acc", lambda rank, i, r: f"{r.val_accuracy * 100:.2f}%", 7, "right"),
         ("Loss", lambda rank, i, r: f"{r.val_loss:.4f}", 7, "right"),
@@ -127,6 +131,33 @@ def print_results_table(results: list[TrainingHistory], title: str = "Results") 
     print(f"  {bot}")
 
 
+def print_llm_reasoning(output_dir: Path, generation: int) -> None:
+    """Print LLM reasoning for the current generation."""
+    decisions_file = output_dir / "llm_decisions.json"
+    if not decisions_file.exists():
+        return
+    
+    with open(decisions_file) as f:
+        data = json.load(f)
+    
+    decision = next((d for d in data["decisions"] if d["generation"] == generation + 1), None)
+    if not decision or not decision.get("raw_response"):
+        return
+    
+    # Strip out code blocks (```...```) from the response
+    response = re.sub(r'```[\w]*\n.*?```', '', decision["raw_response"], flags=re.DOTALL)
+    response = response.strip()
+    
+    if not response:
+        return
+    
+    print(f"\n  💭 LLM Reasoning:")
+    print(f"  {'-' * 56}")
+    for line in response.split('\n'):
+        print(f"  {line}")
+    print()
+
+
 def save_progress(
     output_dir: Path,
     config: ExperimentConfig,
@@ -141,7 +172,6 @@ def save_progress(
 
     progress_data = {
         "experiment_name": config.name,
-        "mode": "evolution",
         "status": status,
         "timestamp": datetime.now().isoformat(),
         "generation": {
@@ -170,18 +200,16 @@ def save_progress(
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: uv run python main.py <config.toml>")
+        print("Usage: evolutionary-mnist <config.toml>")
         sys.exit(1)
 
     config_path = sys.argv[1]
     config = load_config(config_path)
 
     print(f"Experiment: {config.name}")
-    print(f"Seed: {config.seed}")
     print(
-        "Mode: LLM-driven evolution\n"
         f"Generations: {config.evolution.generations}\n"
-        f"Cap per generation: {config.evolution.cap_per_generation}\n"
+        f"Cap per generation: {config.evolution.runs_per_generation}\n"
         f"LLM model: {config.evolution.llm.model}\n"
     )
 
@@ -194,16 +222,14 @@ def main():
     
     results = []
     for gen in range(config.evolution.generations):
-        gen_seed = config.seed + gen
         gen_configs = propose_next_generation_configs(
             schema=config.schema,
             results_so_far=results,
-            cap=config.evolution.cap_per_generation,
-            seed=gen_seed,
+            cap=config.evolution.runs_per_generation,
             model=config.evolution.llm.model,
-            temperature=config.evolution.llm.temperature,
             output_dir=output_dir,
             generation=gen,
+            total_generations=config.evolution.generations,
         )
 
         # Save progress before running this generation
@@ -220,6 +246,8 @@ def main():
         print(f"\n{'═' * 60}")
         print(f"  ⚡ GENERATION {gen + 1}/{config.evolution.generations}")
         print(f"{'═' * 60}")
+        
+        print_llm_reasoning(output_dir, gen)
         
         print_configs_table(gen_configs, title="📋 Training Queue")
         
@@ -245,7 +273,7 @@ def main():
     )
     
     save_results(config, results, output_dir)
-    generate_charts(results, output_dir)
+    generate_charts(results, output_dir, config.evolution)
 
     print("\n" + "=" * 60)
     print("Top 5 Configurations by Validation Accuracy:")

@@ -2,15 +2,15 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import torch
 
-from config import ExperimentConfig, HyperParams, TrainingHistory
-from training import train_model
+from evolutionary_mnist.config import ExperimentConfig, HyperParams, TrainingHistory
+from evolutionary_mnist.training import train_model
 
 
 def run_single_experiment(args: tuple) -> TrainingHistory:
-    params, train_images, train_labels, val_images, val_labels, device, experiment_id, seed = args
+    params, train_images, train_labels, val_images, val_labels, device, experiment_id = args
 
     history = train_model(
-        params, train_images, train_labels, val_images, val_labels, device, experiment_id, seed
+        params, train_images, train_labels, val_images, val_labels, device, experiment_id
     )
     return history
 
@@ -35,7 +35,6 @@ def run_configs(
             val_labels,
             f"cuda:{i % config.num_gpus}",
             i + 1,
-            config.seed,
         )
         for i, params in enumerate(configs)
     ]

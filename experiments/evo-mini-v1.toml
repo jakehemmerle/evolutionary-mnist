@@ -1,6 +1,5 @@
 [experiment]
 name = "evo-mini-v1"
-seed = 42
 
 [schema]
 learning_rate = {type = "float", min = 0.001, max = 0.5, description = "Learning rate for optimizer"}
@@ -12,15 +11,13 @@ cnn_dropout = {type = "float", min = 0.0, max = 0.5, description = "Dropout rate
 cnn_fc_hidden = {type = "int", min = 32, max = 512, description = "Fully connected hidden layer size"}
 
 [evolution]
-generations = 5
-cap_per_generation = 16
-elite_k = 4
+generations = 15
+runs_per_generation = 8
 
 [evolution.llm]
 # Example OpenRouter model id:
 model = "minimax/minimax-m2.1"
-temperature = 0.0
 
 [execution]
 num_gpus = 2
-workers_per_gpu = 2
+workers_per_gpu = 4
