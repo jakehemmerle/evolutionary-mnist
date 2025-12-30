@@ -1,29 +1,24 @@
 # evolutionary-mnist
 
-This repository demonstrates a simple automated hyperparameter tuning via LLM for a two layer CNN on the MNIST dataset.
+This repository demonstrates hyperparameter tuning via LLM for a two layer CNN on the MNIST dataset. It is also an example of something that can be done, but probably shouldn't.
 
 Uses:
 - [PyTorch](https://pytorch.org/) for training the model
 - [OpenRouter](https://openrouter.ai/) for LLM API calls
 
-Future work:
-- Improve system prompt.
-- Neural Architecture Search for on-the-fly architecture modifications.
-- Keep training time constant per run within each generation.
-
 ## Example run
 
+Validation accuracy:
 
 ![Accuracy per generation](experiments/evo-mini-v3/charts/accuracy_per_generation.png)
 
-Reminder: no regression is used here. The improvements learned come strictly from the LLM's reasoning and analysis on the previous runs.
+Reminder: no regression is used here. The improvements learned come strictly from the LLM's reasoning and analysis on the previous runs:
 
 ![Accuracy vs learning rate](experiments/evo-mini-v3/charts/accuracy_vs_lr.png)
 
 Example LLM reasoning (which leaves a lot of room for improvement):
 
 ![Screenshot](experiments/evo-mini-v3/charts/Screenshot%202025-12-30%20at%203.51.59%E2%80%AFPM.png)
-
 
 ## Setup
 
@@ -46,3 +41,8 @@ This example runs for 5 generations with 4 training runs per generation.
 ```bash
 uv run evolutionary-mnist experiments/evo-mini-v3.toml
 ```
+
+## Future work:
+- Improve system prompt.
+- Neural Architecture Search (NAS) for on-the-fly architecture exploration.
+- Keep training time constant per run within each generation.
